@@ -18,5 +18,33 @@
     <ClCompile Include="Source Files\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source Files\Pacman.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header Files\Pacman.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource Files\EnemyBlue.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\EnemyOrange.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\EnemyPink.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\EnemyRed.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\Player.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resource Files\Wall.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

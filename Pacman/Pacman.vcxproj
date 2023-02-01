@@ -76,7 +76,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;SFML_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\marc_\Documents\Visual Studio 2022\Libraries\SFML-2.5.1-32-bit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\marc_\Documents\Visual Studio 2022\Projects\Pacman\Pacman\Source Files;C:\Users\marc_\Documents\Visual Studio 2022\Projects\Pacman\Pacman\Header Files;C:\Users\marc_\Documents\Visual Studio 2022\Libraries\SFML-2.5.1-32-bit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,7 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\marc_\Documents\Visual Studio 2022\Libraries\SFML-2.5.1-32-bit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\marc_\Documents\Visual Studio 2022\Projects\Pacman\Pacman\Source Files;C:\Users\marc_\Documents\Visual Studio 2022\Projects\Pacman\Pacman\Header Files;C:\Users\marc_\Documents\Visual Studio 2022\Libraries\SFML-2.5.1-32-bit\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +134,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\main.cpp" />
+    <ClCompile Include="Source Files\Pacman.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header Files\Pacman.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resource Files\EnemyBlue.png" />
+    <Image Include="Resource Files\EnemyOrange.png" />
+    <Image Include="Resource Files\EnemyPink.png" />
+    <Image Include="Resource Files\EnemyRed.png" />
+    <Image Include="Resource Files\Player.png" />
+    <Image Include="Resource Files\Wall.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
