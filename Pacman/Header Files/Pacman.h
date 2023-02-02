@@ -1,10 +1,11 @@
 #pragma once
+
 #include <memory>
 #include <vector>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
 
-class Object;
+#include "Grid.h"
+
+class DrawDebug;
 
 namespace sf
 {
@@ -16,7 +17,7 @@ class Pacman
 {
 public:
     Pacman();
-    ~Pacman();
+    ~Pacman() = default;
 
     bool IsRunning() const;
     void Update(float deltaTime);
@@ -25,20 +26,19 @@ public:
 private:
     void Draw();
     void PollEvents();
-    void SetupGrid(int width, int height, float cellSize, sf::Vector2f originPosition);
-    int RetrieveNumberFromLayout(sf::Vector2i gridPosition);
     void FPSTimer(float deltaTime);
+    void DrawTraversableMap();
 
     const int SCREEN_WIDTH{ 896 };
     const int SCREEN_HEIGHT{ 992 };
 
-    sf::RenderWindow* mWindow{};
-    sf::Event* mEvent{};
+    std::unique_ptr<sf::RenderWindow> mWindow{};
+    std::unique_ptr<sf::Event> mEvent{};
 
-    sf::Texture texture{};
-    sf::Sprite sprite{};
-
-    std::vector<std::unique_ptr<Object>> mObjects{};
+    std::vector<std::shared_ptr<Object>> mObjects{};
 
     float mFpsTimer{};
+
+    std::shared_ptr<Grid> mGrid{};
+    std::shared_ptr<DrawDebug> mDrawDebug{};
 };

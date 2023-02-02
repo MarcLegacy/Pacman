@@ -1,6 +1,10 @@
 #include "Cell.h"
 
 
+Cell::Cell(const sf::Vector2f position) : Object(position)
+{
+}
+
 Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(position), mCellType(cellType)
 {
     if (cellType == CellType::Wall)

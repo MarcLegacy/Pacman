@@ -1,34 +1,28 @@
 #include "Pacman.h"
 
-#include <array>
 #include <iostream>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
 
-#include "Cell.h"
+#include "DrawDebug.h"
+#include "Grid.h"
 #include "Object.h"
 
-Pacman::Pacman() : mEvent(new sf::Event)
+Pacman::Pacman()
 {
+    mEvent = std::make_unique<sf::Event>();
     const sf::VideoMode videoMode = sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT);
-    mWindow = new sf::RenderWindow(sf::VideoMode(videoMode), "Pacman", sf::Style::Titlebar | sf::Style::Close);
+    mWindow = std::make_unique<sf::RenderWindow>(sf::VideoMode(videoMode), "Pacman", sf::Style::Close);
     mWindow->setFramerateLimit(60);
 
-    //auto cell = std::make_unique<Cell>(sf::Vector2f{0, 0}, "Resource Files/Wall.png");
-    //mObjects.push_back(std::move(cell));
-    //Pacman::mObjects = std::make_unique<Object>();
-
-    SetupGrid(28, 31, 32.0f, sf::Vector2f(0.0f, 0.0f));
+    mGrid = std::make_shared<Grid>(28, 31, 32.0f);
+    mObjects.push_back(mGrid);
+    mDrawDebug = std::make_shared<DrawDebug>();
+    mObjects.push_back(mDrawDebug);
 }
 
-Pacman::~Pacman()
-{
-    delete mWindow;
-    delete mEvent;
-}
 
 bool Pacman::IsRunning() const
 {
@@ -39,10 +33,9 @@ void Pacman::Update(float deltaTime)
 {
     PollEvents();
 
-    std::vector<std::unique_ptr<Object>>::iterator iter, end;
-    for (iter = mObjects.begin(), end = mObjects.end(); iter != end; ++iter)
+    for (const auto& object : mObjects)
     {
-        (*iter)->Update(deltaTime);
+        object->Update(deltaTime);
     }
 
     FPSTimer(deltaTime);
@@ -50,10 +43,9 @@ void Pacman::Update(float deltaTime)
 
 void Pacman::Draw()
 {
-    std::vector<std::unique_ptr<Object>>::iterator iter, end;
-    for (iter = mObjects.begin(), end = mObjects.end(); iter != end; ++iter)
+    for (const auto& object : mObjects)
     {
-        (*iter)->Draw(mWindow);
+        object->Draw(mWindow.get());
     }
 }
 
@@ -83,74 +75,6 @@ void Pacman::PollEvents()
     }
 }
 
-void Pacman::SetupGrid(int width, int height, float cellSize, sf::Vector2f originPosition)
-{
-
-    for (int x = 0; x < width; x++)
-    {
-        for (int y = 0; y < height; y++)
-        {
-            auto position = sf::Vector2f(static_cast<float>(x) * cellSize, static_cast<float>(y) * cellSize);
-            CellType type = RetrieveNumberFromLayout(sf::Vector2i(x, y)) == 1 ? CellType::Wall : CellType::Empty;
-            auto cell = std::make_unique<Cell>(position, type);
-            mObjects.push_back(std::move(cell));
-        }
-    }
-}
-
-int Pacman::RetrieveNumberFromLayout(sf::Vector2i gridPosition)
-{
-    const std::array<std::array<int, 28>, 31> levelLayout
-    { {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    } };
-
-    if (gridPosition.y > levelLayout.size())
-    {
-        std::cout << "Trying to get gridPosition.y: " << gridPosition.y << std::endl;
-        return 0;
-    }
-
-    if (gridPosition.x > levelLayout[0].size())
-    {
-        std::cout << "Trying to get gridPosition.x: " << gridPosition.x << std::endl;
-        return 0;
-    }
-
-    return levelLayout[gridPosition.y].at(gridPosition.x);
-
-}
-
 void Pacman::FPSTimer(float deltaTime)
 {
     if (mFpsTimer < 1.0f)
@@ -163,5 +87,17 @@ void Pacman::FPSTimer(float deltaTime)
         std::cout << "FPS: " << 1 / deltaTime << std::endl;
     }
 }
+
+void Pacman::DrawTraversableMap()
+{
+    for (const auto& traversableCells : mGrid->GetTraversableCellMap())
+    {
+        for (const auto& cell : traversableCells.second)
+        {
+            mDrawDebug->DrawLine(mGrid->GetCellCenterPosition(traversableCells.first->GetPosition()), mGrid->GetCellCenterPosition(cell->GetPosition()));
+        }
+    }
+}
+
 
 

@@ -1,36 +1,182 @@
 #include "Grid.h"
 
+#include <array>
 #include <iostream>
 #include <memory>
 
-#include "Pacman.h"
-
-
-Grid::Grid(const int width, const int height, const float cellSize, const sf::Vector2f originPosition) : mWidth(width), mHeight(height), mCellSize(cellSize), mOriginPosition(originPosition)
+Grid::Grid(const int width, const int height, const float cellSize, const sf::Vector2f originPosition)
+: mWidth(width), mHeight(height), mCellSize(cellSize), mOriginPosition(originPosition)
 {
-    for (int x = 0; x < width; x++)
+    SetupLevelLayout();
+    SetupGrid();
+    SetupTraversableCellMap();
+}
+
+void Grid::Update(float deltaTime)
+{
+    // Should Cells need to be updated.
+    //for (const auto& row : mGridCells)
+    //{
+    //    for (const auto& cell : row)
+    //    {
+    //        cell->Update(deltaTime);
+    //    }
+    //}
+}
+
+void Grid::Draw(sf::RenderTarget* target)
+{
+    for (const auto& row : mGridCells)
     {
-        for (int y = 0; y < height; y++)
+        for (const auto& cell : row)
         {
-            auto position = sf::Vector2f(static_cast<float>(x) * cellSize, static_cast<float>(y) * cellSize);
-            auto cell = std::make_unique<Cell>(position, CellType::Wall);
-            //Pacman::AddObject(std::move(cell));
+            cell->Draw(target);
         }
     }
 }
 
-void Grid::SetupLevel(std::vector<std::vector<int>> levelLayout)
+bool Grid::IsCellValid(const int x, const int y) const
 {
-    if (levelLayout.empty())
+    if (y > mHeight - 1 || y < 0)
     {
-        std::cout << "Invalid Layout!" << std::endl;
-        return;
+        std::cout << "Trying to get gridPosition.y: {" << y << "} which is outside of the grid's height[" << mHeight - 1 << "]" << std::endl;
+        return false;
     }
 
-    for (int x = 0; x < levelLayout.size(); x++)
+    if (x > mWidth - 1|| x < 0)
     {
-        for (int y = 0; y < levelLayout[0].size(); y++)
+        std::cout << "Trying to get gridPosition.x: {" << x << "} which is outside of the grid's width[" << mWidth - 1 << "]" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+sf::Vector2i Grid::GetCellGridPosition(const sf::Vector2f worldPosition) const
+{
+    int x = static_cast<int>((worldPosition - mOriginPosition).x / mCellSize);
+    int y = static_cast<int>((worldPosition - mOriginPosition).y / mCellSize);
+    return {x, y};
+}
+
+std::vector<std::shared_ptr<Cell>> Grid::GetNeighbouringCells(const int x, const int y)
+{
+    if (!IsCellValid(x, y)) return {};
+
+    std::vector<std::shared_ptr<Cell>> neighbouringCells{};
+
+    if (x > 0)
+    {
+        neighbouringCells.push_back(GetCell(x - 1, y));
+    }
+
+    if (x < mWidth - 1)
+    {
+        neighbouringCells.push_back(GetCell(x + 1, y));
+    }
+
+    if (y > 0)
+    {
+        neighbouringCells.push_back(GetCell(x, y - 1));
+    }
+
+    if (y < mHeight - 1)
+    {
+        neighbouringCells.push_back(GetCell(x, y + 1));
+    }
+
+    return neighbouringCells;
+}
+
+void Grid::SetupLevelLayout()
+{
+    mLevelLayout =
+    { {
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1},
+    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
+    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
+    {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+    } };
+}
+
+void Grid::SetupGrid()
+{
+    for (int row = 0; row < mWidth; row++)
+    {
+        std::vector<std::shared_ptr<Cell>> cellRow{};
+
+        for (int column = 0; column < mHeight; column++)
         {
+            // Calculates position and retrieves the cell type to create a cell.
+            auto position = sf::Vector2f(static_cast<float>(row) * mCellSize, static_cast<float>(column) * mCellSize);
+            CellType type = RetrieveNumberFromLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
+            auto cell = std::make_shared<Cell>(position, type);
+            cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
+        }
+
+        mGridCells.push_back(std::move(cellRow));
+    }
+
+}
+
+void Grid::SetupTraversableCellMap()
+{
+    for (const auto& row : mGridCells)
+    {
+        for (const auto& cell : row)
+        {
+            if (cell->GetCellType() == CellType::Wall) continue;    // Don't want to add wall's to the list
+
+            std::vector<std::shared_ptr<Cell>> traversableCells{};
+
+            for (const auto& neighbouringCell : GetNeighbouringCells(cell->GetPosition()))
+            {
+                if (neighbouringCell->GetCellType() != CellType::Wall)
+                {
+                    traversableCells.push_back(neighbouringCell);
+                }
+            }
+
+            mTraversableCellMap[cell] = traversableCells;
         }
     }
 }
+
+//void Grid::SetupTraversableCellMap()
+//{
+//    for (unsigned int row = 0; row < mGridCells.size(); ++row)
+//    {
+//        for (unsigned int column = 0; column < mGridCells[row].size(); ++column)
+//        {
+//            
+//        }
+//    }
+//}
+
