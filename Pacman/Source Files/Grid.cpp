@@ -90,6 +90,12 @@ std::vector<std::shared_ptr<Cell>> Grid::GetNeighbouringCells(const int x, const
 
 void Grid::SetupLevelLayout()
 {
+    // 0 = Empty
+    // 1 = Wall
+    // 2 = Player Spawn
+    // 3 = Enemy Spawn
+    // 4 = Teleport
+    // 5 = Power Pill
     mLevelLayout =
     { {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
@@ -121,7 +127,7 @@ void Grid::SetupLevelLayout()
     {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
     {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
     } };
 }
@@ -137,6 +143,18 @@ void Grid::SetupGrid()
             // Calculates position and retrieves the cell type to create a cell.
             auto position = sf::Vector2f(static_cast<float>(row) * mCellSize, static_cast<float>(column) * mCellSize);
             CellType type = RetrieveNumberFromLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
+            switch (RetrieveNumberFromLayout(row, column))
+            {
+            case 0: 
+                type = CellType::Empty;
+                break;
+            case 1:
+                type = CellType::Wall;
+                break;
+            case 2:
+                type = CellType::Empty;
+                mPlayerSpawnPosition = position;
+            }
             auto cell = std::make_shared<Cell>(position, type);
             cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
         }

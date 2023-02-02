@@ -9,6 +9,7 @@
 #include "DrawDebug.h"
 #include "Grid.h"
 #include "Object.h"
+#include "Player.h"
 
 Pacman::Pacman()
 {
@@ -17,10 +18,7 @@ Pacman::Pacman()
     mWindow = std::make_unique<sf::RenderWindow>(sf::VideoMode(videoMode), "Pacman", sf::Style::Close);
     mWindow->setFramerateLimit(60);
 
-    mGrid = std::make_shared<Grid>(28, 31, 32.0f);
-    mObjects.push_back(mGrid);
-    mDrawDebug = std::make_shared<DrawDebug>();
-    mObjects.push_back(mDrawDebug);
+    InitializeObjects();
 }
 
 
@@ -97,6 +95,18 @@ void Pacman::DrawTraversableMap()
             mDrawDebug->DrawLine(mGrid->GetCellCenterPosition(traversableCells.first->GetPosition()), mGrid->GetCellCenterPosition(cell->GetPosition()));
         }
     }
+}
+
+void Pacman::InitializeObjects()
+{
+    mGrid = std::make_shared<Grid>(28, 31, 32.0f);
+    mObjects.push_back(mGrid);
+    mDrawDebug = std::make_shared<DrawDebug>();
+    mObjects.push_back(mDrawDebug);
+    mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
+    mObjects.push_back(mPlayer);
+
+    mDrawDebug->DrawCell(mPlayer->GetPosition(), 32.0f, sf::Color::Red);
 }
 
 

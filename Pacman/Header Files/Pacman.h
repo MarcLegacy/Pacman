@@ -5,6 +5,7 @@
 
 #include "Grid.h"
 
+class Player;
 class DrawDebug;
 
 namespace sf
@@ -28,6 +29,7 @@ private:
     void PollEvents();
     void FPSTimer(float deltaTime);
     void DrawTraversableMap();
+    void InitializeObjects();
 
     const int SCREEN_WIDTH{ 896 };
     const int SCREEN_HEIGHT{ 992 };
@@ -35,10 +37,12 @@ private:
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};
 
-    std::vector<std::shared_ptr<Object>> mObjects{};
-
     float mFpsTimer{};
 
+    // Objects
+    std::vector<std::shared_ptr<Object>> mObjects{};
     std::shared_ptr<Grid> mGrid{};
     std::shared_ptr<DrawDebug> mDrawDebug{};
+    std::shared_ptr<Player> mPlayer{};
+
 };

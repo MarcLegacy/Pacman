@@ -5,7 +5,7 @@
 enum class CellType
 {
     Empty,
-    Wall,
+    Wall
 };
 
 class Cell : public Object

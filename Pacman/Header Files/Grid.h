@@ -44,6 +44,8 @@ public:
 
     std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> GetTraversableCellMap() const { return mTraversableCellMap; }
 
+    sf::Vector2f GetPlayerSpawnPosition() const { return mPlayerSpawnPosition; }
+
 private:
     void SetupLevelLayout();
     void SetupGrid();
@@ -63,5 +65,6 @@ private:
     std::vector<std::vector<std::shared_ptr<Cell>>> mGridCells{};
     std::array<std::array<int, 28>, 31> mLevelLayout{};
     std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> mTraversableCellMap{};
+    sf::Vector2f mPlayerSpawnPosition{};
 };
 
