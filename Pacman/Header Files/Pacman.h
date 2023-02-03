@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+class Enemy;
 class Object;
 class Grid;
 class Player;
@@ -47,4 +48,5 @@ private:
     static std::shared_ptr<Grid> mGrid;
     static std::shared_ptr<DrawDebug> mDrawDebug;
     std::shared_ptr<Player> mPlayer{};
+    std::vector<std::shared_ptr<Enemy>> mEnemies{};
 };

@@ -40,9 +40,9 @@ public:
     sf::Vector2f GetCellCenterPosition(const sf::Vector2i gridPosition) const { return GetCellCenterPosition(gridPosition.x, gridPosition.y); }
     sf::Vector2f GetCellCenterPosition(const sf::Vector2f worldPosition) const { return GetCellWorldPosition(worldPosition) + GetCellCenter(); }
 
-    std::vector<std::shared_ptr<Cell>> GetNeighbouringCells(const int x, const int y);
-    std::vector<std::shared_ptr<Cell>> GetNeighbouringCells(const sf::Vector2i gridPosition) { return GetNeighbouringCells(gridPosition.x, gridPosition.y); }
-    std::vector<std::shared_ptr<Cell>> GetNeighbouringCells(const sf::Vector2f worldPosition) { return GetNeighbouringCells(GetCellGridPosition(worldPosition)); }
+    std::vector<std::shared_ptr<Cell>> GetNeighboringCells(const int x, const int y);
+    std::vector<std::shared_ptr<Cell>> GetNeighboringCells(const sf::Vector2i gridPosition) { return GetNeighboringCells(gridPosition.x, gridPosition.y); }
+    std::vector<std::shared_ptr<Cell>> GetNeighboringCells(const sf::Vector2f worldPosition) { return GetNeighboringCells(GetCellGridPosition(worldPosition)); }
 
     std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> GetTraversableCellMap() const { return mTraversableCellMap; }
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const int x, const int y) { return IsCellValid(x, y) ? mTraversableCellMap[GetCell(x, y)] : std::vector<std::shared_ptr<Cell>>{}; }
@@ -50,6 +50,8 @@ public:
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const sf::Vector2f worldPosition) { return GetTraversableCells(GetCellGridPosition(worldPosition)); }
 
     sf::Vector2f GetPlayerSpawnPosition() const { return mPlayerSpawnPosition; }
+    sf::Vector2f GetEnemySpawnPosition(const int number) const;
+
 
 private:
     void SetupLevelLayout();
@@ -71,5 +73,6 @@ private:
     std::array<std::array<int, 28>, 31> mLevelLayout{};
     std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> mTraversableCellMap{};
     sf::Vector2f mPlayerSpawnPosition{};
+    std::vector<sf::Vector2f> mEnemySpawnPositions{};
 };
 

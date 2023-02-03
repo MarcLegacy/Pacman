@@ -134,20 +134,26 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Source Files\Cell.cpp" />
+    <ClCompile Include="Source Files\Character.cpp" />
     <ClCompile Include="Source Files\DrawDebug.cpp" />
+    <ClCompile Include="Source Files\Enemy.cpp" />
     <ClCompile Include="Source Files\Grid.cpp" />
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\Object.cpp" />
     <ClCompile Include="Source Files\Pacman.cpp" />
     <ClCompile Include="Source Files\Player.cpp" />
+    <ClCompile Include="Source Files\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header Files\Cell.h" />
+    <ClInclude Include="Header Files\Character.h" />
     <ClInclude Include="Header Files\DrawDebug.h" />
+    <ClInclude Include="Header Files\Enemy.h" />
     <ClInclude Include="Header Files\Grid.h" />
     <ClInclude Include="Header Files\Object.h" />
     <ClInclude Include="Header Files\Pacman.h" />
     <ClInclude Include="Header Files\Player.h" />
+    <ClInclude Include="Header Files\Utility.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resource Files\EnemyBlue.png" />

@@ -7,6 +7,7 @@
 #include <SFML/Window/VideoMode.hpp>
 
 #include "DrawDebug.h"
+#include "Enemy.h"
 #include "Grid.h"
 #include "Object.h"
 #include "Player.h"
@@ -125,6 +126,12 @@ void Pacman::InitializeObjects()
     mObjects.push_back(mDrawDebug);
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
+    const auto enemyBlue = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(0), SkinColor::Blue);
+    mObjects.push_back(enemyBlue);
+    const auto enemyRed = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(1), SkinColor::Red);
+    mObjects.push_back(enemyRed);
+    const auto enemyOrange = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(2), SkinColor::Orange);
+    mObjects.push_back(enemyOrange);
 }
 
 

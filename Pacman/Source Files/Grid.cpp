@@ -59,7 +59,7 @@ sf::Vector2i Grid::GetCellGridPosition(const sf::Vector2f worldPosition) const
     return {x, y};
 }
 
-std::vector<std::shared_ptr<Cell>> Grid::GetNeighbouringCells(const int x, const int y)
+std::vector<std::shared_ptr<Cell>> Grid::GetNeighboringCells(const int x, const int y)
 {
     if (!IsCellValid(x, y)) return {};
 
@@ -88,6 +88,16 @@ std::vector<std::shared_ptr<Cell>> Grid::GetNeighbouringCells(const int x, const
     return neighbouringCells;
 }
 
+sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
+{
+    if (number >= 0 && number < static_cast<int>(mEnemySpawnPositions.size()))
+    {
+        return mEnemySpawnPositions[number];
+    }
+        
+    return sf::Vector2f{};
+}
+
 void Grid::SetupLevelLayout()
 {
     // 0 = Empty
@@ -111,7 +121,7 @@ void Grid::SetupLevelLayout()
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
+    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 3, 0, 0, 0, 3, 3, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
@@ -154,6 +164,13 @@ void Grid::SetupGrid()
             case 2:
                 type = CellType::Empty;
                 mPlayerSpawnPosition = position;
+                break;
+            case 3:
+                type = CellType::Empty;
+                    mEnemySpawnPositions.push_back(position);
+                break;
+            default:
+                std::cout << "Number from level layout not yet set!" << std::endl;
             }
             auto cell = std::make_shared<Cell>(position, type);
             cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
@@ -174,7 +191,7 @@ void Grid::SetupTraversableCellMap()
 
             std::vector<std::shared_ptr<Cell>> traversableCells{};
 
-            for (const auto& neighbouringCell : GetNeighbouringCells(cell->GetPosition()))
+            for (const auto& neighbouringCell : GetNeighboringCells(cell->GetPosition()))
             {
                 if (neighbouringCell->GetCellType() != CellType::Wall)
                 {
