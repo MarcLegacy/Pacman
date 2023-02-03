@@ -15,6 +15,8 @@ public:
     virtual void Draw(sf::RenderTarget* target);
 
     sf::Vector2f GetPosition() const { return mPosition; }
+    // Returns the position + center of the texture.
+    sf::Vector2f GetCenterPosition() const { return mPosition + sf::Vector2f(static_cast<float>(mTexture.getSize().x), static_cast<float>(mTexture.getSize().y)) * 0.5f; }
 
 protected:
     sf::Vector2f mPosition{};

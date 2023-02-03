@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "Grid.h"
-
+class Object;
+class Grid;
 class Player;
 class DrawDebug;
 
@@ -18,17 +18,20 @@ class Pacman
 {
 public:
     Pacman();
-    ~Pacman() = default;
+    ~Pacman();
 
     bool IsRunning() const;
-    void Update(float deltaTime);
+    void Update(const float deltaTime);
     void Render();
+
+    static std::shared_ptr<Grid> GetGrid() { return mGrid; }
+    static std::shared_ptr<DrawDebug> GetDrawDebug() { return mDrawDebug; }
 
 private:
     void Draw();
-    void PollEvents();
-    void FPSTimer(float deltaTime);
-    void DrawTraversableMap();
+    void PollEvents() const;
+    void FPSTimer(const float deltaTime);
+    void DrawTraversableMap() const;
     void InitializeObjects();
 
     const int SCREEN_WIDTH{ 896 };
@@ -41,8 +44,7 @@ private:
 
     // Objects
     std::vector<std::shared_ptr<Object>> mObjects{};
-    std::shared_ptr<Grid> mGrid{};
-    std::shared_ptr<DrawDebug> mDrawDebug{};
+    static std::shared_ptr<Grid> mGrid;
+    static std::shared_ptr<DrawDebug> mDrawDebug;
     std::shared_ptr<Player> mPlayer{};
-
 };

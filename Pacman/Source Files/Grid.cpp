@@ -142,8 +142,8 @@ void Grid::SetupGrid()
         {
             // Calculates position and retrieves the cell type to create a cell.
             auto position = sf::Vector2f(static_cast<float>(row) * mCellSize, static_cast<float>(column) * mCellSize);
-            CellType type = RetrieveNumberFromLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
-            switch (RetrieveNumberFromLayout(row, column))
+            CellType type = GetNumberFromLevelLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
+            switch (GetNumberFromLevelLayout(row, column))
             {
             case 0: 
                 type = CellType::Empty;

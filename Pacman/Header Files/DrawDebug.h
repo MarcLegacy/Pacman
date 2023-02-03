@@ -14,12 +14,14 @@ namespace sf
 class DrawDebug : public Object
 {
 public:
-    //DrawDebug(const std::shared_ptr<sf::RenderWindow>& window);
     void Update(float deltaTime) override;
     void Draw(sf::RenderTarget* target) override;
 
-    void DrawLine(const sf::Vector2f fromPosition, const sf::Vector2f toPosition, const sf::Color& color = sf::Color::White);
-    void DrawCell(const sf::Vector2f cellWorldPosition, const float cellSize = 32.0f, const sf::Color& color = sf::Color::White);
+    void DrawLinePersistant(const sf::Vector2f fromPosition, const sf::Vector2f toPosition, const sf::Color& color = sf::Color::White);
+    std::array<sf::Vertex, 2> DrawLine(const sf::Vector2f fromPosition, const sf::Vector2f toPosition, const sf::Color& color = sf::Color::White);
+
+    void DrawCellPersistant(const sf::Vector2f cellWorldPosition, const float cellSize = 32.0f, const sf::Color& color = sf::Color::White);
+    static sf::RectangleShape DrawCell(const sf::Vector2f cellWorldPosition, const float cellSize = 32.0f, const sf::Color& color = sf::Color::White);
 
 private:
     std::vector<std::array<sf::Vertex, 2>> mDrawLines{};

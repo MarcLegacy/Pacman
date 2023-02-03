@@ -7,6 +7,9 @@ int main()
 
     sf::Clock clock;
 
+    //int* test = new int;
+    //*test = 20;
+
     while (pacman.IsRunning())
     {
         pacman.Update(clock.restart().asSeconds());

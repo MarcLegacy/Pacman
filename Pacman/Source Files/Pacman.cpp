@@ -11,6 +11,9 @@
 #include "Object.h"
 #include "Player.h"
 
+std::shared_ptr<Grid> Pacman::mGrid{};
+std::shared_ptr<DrawDebug> Pacman::mDrawDebug{};
+
 Pacman::Pacman()
 {
     mEvent = std::make_unique<sf::Event>();
@@ -19,6 +22,21 @@ Pacman::Pacman()
     mWindow->setFramerateLimit(60);
 
     InitializeObjects();
+
+    // mGrid->GetCell(mGrid->GetCellCenterPosition(mPlayer->GetPosition()))->GetPosition()  // This is how I will be able to move correctly
+}
+
+Pacman::~Pacman()
+{
+    if (mGrid != nullptr)
+    {
+        mGrid = nullptr;
+    }
+
+    if (mDrawDebug != nullptr)
+    {
+        mDrawDebug = nullptr;
+    }
 }
 
 
@@ -27,7 +45,7 @@ bool Pacman::IsRunning() const
     return mWindow->isOpen();
 }
 
-void Pacman::Update(float deltaTime)
+void Pacman::Update(const float deltaTime)
 {
     PollEvents();
 
@@ -45,6 +63,8 @@ void Pacman::Draw()
     {
         object->Draw(mWindow.get());
     }
+
+    mWindow->draw(mDrawDebug->DrawCell(mGrid->GetCellWorldPosition(mPlayer->GetCenterPosition()), 32.0f, sf::Color::Red));
 }
 
 void Pacman::Render()
@@ -54,7 +74,7 @@ void Pacman::Render()
     mWindow->display();
 }
 
-void Pacman::PollEvents()
+void Pacman::PollEvents() const
 {
     while (mWindow->pollEvent(*mEvent))
     {
@@ -73,7 +93,7 @@ void Pacman::PollEvents()
     }
 }
 
-void Pacman::FPSTimer(float deltaTime)
+void Pacman::FPSTimer(const float deltaTime)
 {
     if (mFpsTimer < 1.0f)
     {
@@ -86,13 +106,13 @@ void Pacman::FPSTimer(float deltaTime)
     }
 }
 
-void Pacman::DrawTraversableMap()
+void Pacman::DrawTraversableMap() const
 {
     for (const auto& traversableCells : mGrid->GetTraversableCellMap())
     {
         for (const auto& cell : traversableCells.second)
         {
-            mDrawDebug->DrawLine(mGrid->GetCellCenterPosition(traversableCells.first->GetPosition()), mGrid->GetCellCenterPosition(cell->GetPosition()));
+            mDrawDebug->DrawLinePersistant(mGrid->GetCellCenterPosition(traversableCells.first->GetPosition()), mGrid->GetCellCenterPosition(cell->GetPosition()));
         }
     }
 }
@@ -105,9 +125,9 @@ void Pacman::InitializeObjects()
     mObjects.push_back(mDrawDebug);
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
-
-    mDrawDebug->DrawCell(mPlayer->GetPosition(), 32.0f, sf::Color::Red);
 }
+
+
 
 
 

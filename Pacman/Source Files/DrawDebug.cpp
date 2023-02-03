@@ -21,7 +21,7 @@ void DrawDebug::Draw(sf::RenderTarget* target)
     }
 }
 
-void DrawDebug::DrawLine(const sf::Vector2f fromPosition, const sf::Vector2f toPosition, const sf::Color& color)
+void DrawDebug::DrawLinePersistant(const sf::Vector2f fromPosition, const sf::Vector2f toPosition, const sf::Color& color)
 {
     const std::array<sf::Vertex, 2> line =
     {
@@ -32,7 +32,13 @@ void DrawDebug::DrawLine(const sf::Vector2f fromPosition, const sf::Vector2f toP
     mDrawLines.push_back(line);
 }
 
-void DrawDebug::DrawCell(const sf::Vector2f cellWorldPosition, const float cellSize, const sf::Color& color)
+std::array<sf::Vertex, 2> DrawDebug::DrawLine(const sf::Vector2f fromPosition, const sf::Vector2f toPosition,
+    const sf::Color& color)
+{
+    return {};
+}
+
+void DrawDebug::DrawCellPersistant(const sf::Vector2f cellWorldPosition, const float cellSize, const sf::Color& color)
 {
     sf::RectangleShape shape{};
 
@@ -43,6 +49,20 @@ void DrawDebug::DrawCell(const sf::Vector2f cellWorldPosition, const float cellS
     shape.setOutlineThickness(1.0f);
 
     mDrawRectangleShapes.push_back(shape);
+}
+
+sf::RectangleShape DrawDebug::DrawCell(const sf::Vector2f cellWorldPosition, const float cellSize,
+    const sf::Color& color)
+{
+    sf::RectangleShape shape{};
+
+    shape.setPosition(cellWorldPosition);
+    shape.setSize({ cellSize, cellSize });
+    shape.setFillColor(sf::Color::Transparent);
+    shape.setOutlineColor(color);
+    shape.setOutlineThickness(1.0f);
+
+    return shape;
 }
 
 
