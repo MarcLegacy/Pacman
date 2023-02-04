@@ -2,8 +2,12 @@
 
 #include <SFML/Window/Keyboard.hpp>
 
-Player::Player(const sf::Vector2f position)
-    : Character(position)
+#include "Pacman.h"
+#include "Grid.h"
+#include "Utility.h"
+
+Player::Player(const sf::Vector2f position, const float speed)
+    : Character(position, speed)
 {
     if (mTexture.loadFromFile("Resource Files/Player.png"))
     {
@@ -13,9 +17,27 @@ Player::Player(const sf::Vector2f position)
 
 void Player::Move(const float deltaTime)
 {
-    Character::Move(deltaTime);
-
     PlayerInput();
+
+    // Checks if the destination has been reached before setting the next destination.
+    // Also added immediate changing of direction when the character tries to move the other way around.
+    if (Utility::Distance(mPosition, mDestinationPosition) < 3.0f || IsGoingBack())
+    {
+        if (!MoveToDirection(mDesiredDirection))
+        {
+            // This makes sure that the character will move back to the center of the cell instead of stopping immediately when the character tries to move back while a wall is blocking that direction.
+            // TODO: Change the movement so that this bandage is automatically fixed.
+            if (MoveToDirection(mCurrentDirection) && IsGoingBack())
+            {
+                mCurrentDirection = mDesiredDirection;
+                mDestinationPosition = Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition());
+            }
+        }
+    }
+    else
+    {
+        mPosition += GetMoveDirection(mCurrentDirection) * mSpeed * deltaTime;
+    }
 }
 
 

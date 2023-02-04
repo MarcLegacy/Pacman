@@ -28,6 +28,8 @@ public:
     static std::shared_ptr<Grid> GetGrid() { return mGrid; }
     static std::shared_ptr<DrawDebug> GetDrawDebug() { return mDrawDebug; }
 
+    static constexpr float CELL_SIZE{ 32.0f };  // constexpr specifies that the value of an object or a function can be evaluated at compile-time and the expression can be used in other constant expressions. Need this to make set in other classes.
+
 private:
     void Draw();
     void PollEvents() const;
@@ -37,6 +39,7 @@ private:
 
     const int SCREEN_WIDTH{ 896 };
     const int SCREEN_HEIGHT{ 992 };
+
 
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};

@@ -141,6 +141,7 @@
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\Object.cpp" />
     <ClCompile Include="Source Files\Pacman.cpp" />
+    <ClCompile Include="Source Files\Pathfinder.cpp" />
     <ClCompile Include="Source Files\Player.cpp" />
     <ClCompile Include="Source Files\Utility.cpp" />
   </ItemGroup>
@@ -149,9 +150,11 @@
     <ClInclude Include="Header Files\Character.h" />
     <ClInclude Include="Header Files\DrawDebug.h" />
     <ClInclude Include="Header Files\Enemy.h" />
+    <ClInclude Include="Header Files\GlobalEnums.h" />
     <ClInclude Include="Header Files\Grid.h" />
     <ClInclude Include="Header Files\Object.h" />
     <ClInclude Include="Header Files\Pacman.h" />
+    <ClInclude Include="Header Files\Pathfinder.h" />
     <ClInclude Include="Header Files\Player.h" />
     <ClInclude Include="Header Files\Utility.h" />
   </ItemGroup>

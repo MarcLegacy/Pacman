@@ -23,8 +23,6 @@ Pacman::Pacman()
     mWindow->setFramerateLimit(60);
 
     InitializeObjects();
-
-    // mGrid->GetCell(mGrid->GetCellCenterPosition(mPlayer->GetPosition()))->GetPosition()  // This is how I will be able to move correctly
 }
 
 Pacman::~Pacman()
@@ -65,7 +63,8 @@ void Pacman::Draw()
         object->Draw(mWindow.get());
     }
 
-    mWindow->draw(mDrawDebug->DrawCell(mGrid->GetCellWorldPosition(mPlayer->GetCenterPosition()), 32.0f, sf::Color::Red));
+    //const auto& arrow = mDrawDebug->DrawArrow({ 500, 500 }, Direction::Right, 500, sf::Color::Red);
+    //mWindow->draw(&arrow[0], arrow.size(), sf::LineStrip);
 }
 
 void Pacman::Render()
@@ -120,7 +119,7 @@ void Pacman::DrawTraversableMap() const
 
 void Pacman::InitializeObjects()
 {
-    mGrid = std::make_shared<Grid>(28, 31, 32.0f);
+    mGrid = std::make_shared<Grid>(28, 31, CELL_SIZE);
     mObjects.push_back(mGrid);
     mDrawDebug = std::make_shared<DrawDebug>();
     mObjects.push_back(mDrawDebug);

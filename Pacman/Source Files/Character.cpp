@@ -1,11 +1,14 @@
 #include "Character.h"
 
+#include <SFML/Graphics/RenderTarget.hpp>
+
+#include "DrawDebug.h"
 #include "Grid.h"
 #include "Pacman.h"
-#include "Utility.h"
 
-Character::Character(const sf::Vector2f position)
-    : Object(position), mDestinationPosition(mPosition)
+
+Character::Character(const sf::Vector2f position, const float speed)
+    : Object(position), mSpeed(speed), mDestinationPosition(mPosition)
 {
 }
 
@@ -16,36 +19,11 @@ void Character::Update(const float deltaTime)
     mSprite.setPosition(mPosition);
 }
 
-void Character::Move(const float deltaTime)
-{
-    //std::cout << CalculateDistance(mPosition, mDestinationPosition) << std::endl;
-
-    // Checks if the destination has been reached before setting the next destination.
-    // Also added immediate changing of direction when the character tries to move the other way around.
-    if (Utility::Distance(mPosition, mDestinationPosition) < 1.0f || IsGoingBack())
-    {
-        if (!MoveToDirection(mDesiredDirection))
-        {
-            // This makes sure that the character will move back to the center of the cell instead of stopping immediately when the character tries to move back while a wall is blocking that direction.
-            // TODO: Change the movement so that this bandage is automatically fixed.
-            if (MoveToDirection(mCurrentDirection) && IsGoingBack())
-            {
-                mCurrentDirection = mDesiredDirection;
-                mDestinationPosition = Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition());
-            }
-        }
-    }
-    else
-    {
-        mPosition += GetMoveDirection(mCurrentDirection) * mSpeed * deltaTime;
-    }
-}
-
 void Character::Draw(sf::RenderTarget* target)
 {
     Object::Draw(target);
 
-    //target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(mPosition), 32.0f, sf::Color::Red));
+    target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
 }
 
 bool Character::MoveToDirection(const Direction& direction)

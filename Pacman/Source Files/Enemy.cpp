@@ -4,7 +4,7 @@
 
 #include "Utility.h"
 
-Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor)
+Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed)
     : Character(position)
 {
     std::string fileName{};
@@ -37,9 +37,7 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor)
 
 void Enemy::Move(const float deltaTime)
 {
-    Character::Move(deltaTime);
-
-    if (Utility::Distance(mPosition, mDestinationPosition) < 1.0f)
+    if (Utility::Distance(mPosition, mDestinationPosition) < 3.0f)
     {
         const int randomNumber = rand() / (RAND_MAX / (4));
 
@@ -58,6 +56,16 @@ void Enemy::Move(const float deltaTime)
             mDesiredDirection = Direction::Right;
             break;
         }
+
+        MoveToDirection(mDesiredDirection);
     }
+    else
+    {
+        mPosition += GetMoveDirection(mCurrentDirection) * mSpeed * deltaTime;
+    }
+
+
+
+
 
 }
