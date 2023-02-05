@@ -16,6 +16,7 @@
 
 std::shared_ptr<Grid> Pacman::mGrid{};
 std::shared_ptr<DrawDebug> Pacman::mDrawDebug{};
+std::shared_ptr<Pathfinder> Pacman::mPathfinder{};
 
 Pacman::Pacman()
 {
@@ -31,7 +32,9 @@ Pacman::Pacman()
     //    mDrawDebug->DrawCellCostPersistant(0, cellGridPosition);
     //}
 
-    //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetPosition())), 24.0f);
+    //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition())), 24.0f);
+
+    //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(sf::Vector2i{ 1, 1 }, sf::Vector2i{ 1, 5 }), 24.0f);
 }
 
 Pacman::~Pacman()
@@ -63,6 +66,14 @@ void Pacman::Update(const float deltaTime)
     }
 
     FPSTimer(deltaTime);
+
+    if (mPlayer->GetOnCellChanged())
+    {
+        for (const auto& enemy : mEnemies)
+        {
+            enemy->FindPath(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()));
+        }
+    }
 }
 
 void Pacman::Draw()
@@ -138,13 +149,12 @@ void Pacman::InitializeObjects()
     mObjects.push_back(mPlayer);
     const auto enemyBlue = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(0), SkinColor::Blue);
     mEnemies.push_back(enemyBlue);
-    mObjects.push_back(enemyBlue);
     const auto enemyRed = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(1), SkinColor::Red);
     mEnemies.push_back(enemyRed);
-    mObjects.push_back(enemyRed);
     const auto enemyOrange = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(2), SkinColor::Orange);
     mEnemies.push_back(enemyOrange);
-    mObjects.push_back(enemyOrange);
+    mObjects.insert(mObjects.end(), mEnemies.begin(), mEnemies.end());
+
 }
 
 

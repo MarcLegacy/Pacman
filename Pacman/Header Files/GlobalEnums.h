@@ -2,6 +2,7 @@
 
 enum class Direction
 {
+    Invalid,
     Up,
     Down,
     Left,

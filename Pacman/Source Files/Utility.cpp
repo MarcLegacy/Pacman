@@ -23,8 +23,7 @@ Direction Utility::ConvertGridDirectionToDirection(const sf::Vector2i gridDirect
         return Direction::Right;
     }
 
-    std::cout << "No direction found for gridDirection: " << gridDirection.x << ", " << gridDirection.y << std::endl;
-    return {};
+    return { Direction::Invalid };
 }
 
 sf::Vector2i Utility::ConvertDirectionToGridDirection(const Direction& direction)
