@@ -1,9 +1,9 @@
 #pragma once
 
 #include <array>
-#include <memory>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/Shape.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 #include "GlobalEnums.h"
 #include "Object.h"
@@ -17,6 +17,8 @@ namespace sf
 class DrawDebug : public Object
 {
 public:
+    DrawDebug();
+
     void Update(float deltaTime) override;
     void Draw(sf::RenderTarget* target) override;
 
@@ -29,11 +31,25 @@ public:
     static std::array<sf::Vertex, 5> DrawArrow(const sf::Vector2f position, const Direction direction, const float size, const sf::Color& color = sf::Color::White);
     void DrawArrowPersistant(const sf::Vector2f position, const Direction direction, const float size, const sf::Color& color = sf::Color::White) { mDrawArrows.push_back(DrawArrow(position, direction, size, color)); }
 
+    static std::vector<std::array<sf::Vertex, 5>> DrawPathArrows(const std::vector<sf::Vector2f>& positions, const float size, const sf::Color& color = sf::Color::White);
+    void DrawPathArrowsPersistant(const std::vector<sf::Vector2f>& positions, const float size, const sf::Color& color = sf::Color::White);
+    static std::vector<std::array<sf::Vertex, 5>> DrawPathArrows(const std::vector<sf::Vector2i>& positions, const float size, const sf::Color& color = sf::Color::White);
+    void DrawPathArrowsPersistant(const std::vector<sf::Vector2i>& positions, const float size, const sf::Color& color = sf::Color::White);
+
+    sf::Text DrawText(const std::string& text, const sf::Vector2f position, const sf::Color& color = sf::Color::White) const;
+    void DrawTextPersistant(const std::string& text, const sf::Vector2f position, const sf::Color& color = sf::Color::White) { mDrawTexts.push_back(DrawText(text, position, color)); }
+
+    // Won't space well will negative numbers
+    sf::Text DrawCellCost(const int cost, const sf::Vector2i gridPosition, const sf::Color& color = sf::Color::White) const;
+    // Won't space well will negative numbers
+    void DrawCellCostPersistant(const int cost, const sf::Vector2i gridPosition, const sf::Color& color = sf::Color::White) { mDrawTexts.push_back(DrawCellCost(cost, gridPosition, color)); }
+
 private:
     std::vector<std::array<sf::Vertex, 2>> mDrawLines{};
     std::vector<sf::RectangleShape> mDrawRectangleShapes{}; // Can't use the 'Shape' class as it is an abstract class.
     std::vector<std::array<sf::Vertex, 5>> mDrawArrows{};
+    std::vector<sf::Text> mDrawTexts{};
 
-    std::shared_ptr<sf::RenderWindow> mWindow{};
+    sf::Font mFont;
 };
 

@@ -166,6 +166,9 @@
     <Image Include="Resource Files\Player.png" />
     <Image Include="Resource Files\Wall.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resource Files\Font.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

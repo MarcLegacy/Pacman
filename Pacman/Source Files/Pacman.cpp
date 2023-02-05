@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/VideoMode.hpp>
@@ -10,6 +11,7 @@
 #include "Enemy.h"
 #include "Grid.h"
 #include "Object.h"
+#include "Pathfinder.h"
 #include "Player.h"
 
 std::shared_ptr<Grid> Pacman::mGrid{};
@@ -23,6 +25,13 @@ Pacman::Pacman()
     mWindow->setFramerateLimit(60);
 
     InitializeObjects();
+
+    //for (const auto& cellGridPosition: Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetPosition())))
+    //{
+    //    mDrawDebug->DrawCellCostPersistant(0, cellGridPosition);
+    //}
+
+    //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetPosition())), 24.0f);
 }
 
 Pacman::~Pacman()
@@ -65,6 +74,8 @@ void Pacman::Draw()
 
     //const auto& arrow = mDrawDebug->DrawArrow({ 500, 500 }, Direction::Right, 500, sf::Color::Red);
     //mWindow->draw(&arrow[0], arrow.size(), sf::LineStrip);
+
+    //mWindow->draw(mDrawDebug->DrawText("something!", mGrid->GetCellWorldPosition(mPlayer->GetCenterPosition())));
 }
 
 void Pacman::Render()
@@ -102,7 +113,7 @@ void Pacman::FPSTimer(const float deltaTime)
     else
     {
         mFpsTimer = 0.0f;
-        std::cout << "FPS: " << 1 / deltaTime << std::endl;
+        std::cout << "FPS: " << floorf(1 / deltaTime * 100) / 100 << std::endl;
     }
 }
 
@@ -126,10 +137,13 @@ void Pacman::InitializeObjects()
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
     const auto enemyBlue = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(0), SkinColor::Blue);
+    mEnemies.push_back(enemyBlue);
     mObjects.push_back(enemyBlue);
     const auto enemyRed = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(1), SkinColor::Red);
+    mEnemies.push_back(enemyRed);
     mObjects.push_back(enemyRed);
     const auto enemyOrange = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(2), SkinColor::Orange);
+    mEnemies.push_back(enemyOrange);
     mObjects.push_back(enemyOrange);
 }
 

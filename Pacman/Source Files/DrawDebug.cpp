@@ -2,8 +2,18 @@
 
 #include <array>
 #include <iostream>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Text.hpp>
+
+#include "Grid.h"
+#include "Utility.h"
+
+DrawDebug::DrawDebug()
+{
+    mFont.loadFromFile("Resource Files/Font.ttf");
+}
 
 void DrawDebug::Update(float deltaTime)
 {
@@ -21,9 +31,14 @@ void DrawDebug::Draw(sf::RenderTarget* target)
         target->draw(drawShape);
     }
 
-    for (const auto& drawLine : mDrawArrows)
+    for (const auto& drawArrow : mDrawArrows)
     {
-        target->draw(&drawLine[0], drawLine.size(), sf::LineStrip);
+        target->draw(&drawArrow[0], drawArrow.size(), sf::LineStrip);
+    }
+
+    for (const auto& drawText : mDrawTexts)
+    {
+        target->draw(drawText);
     }
 }
 
@@ -80,14 +95,98 @@ std::array<sf::Vertex, 5> DrawDebug::DrawArrow(const sf::Vector2f position, cons
 
     const std::array<sf::Vertex, 5> arrow =
     {
-        sf::Vertex(startPosition, color),
-        sf::Vertex(endPosition, color),
-        sf::Vertex(leftPosition, color),
-        sf::Vertex(endPosition, color),
-        sf::Vertex(rightPosition, color)
+        sf::Vertex{startPosition, color},
+        sf::Vertex{endPosition, color},
+        sf::Vertex{leftPosition, color},
+        sf::Vertex{endPosition, color},
+        sf::Vertex{rightPosition, color}
     };
 
     return arrow;
+}
+
+
+
+std::vector<std::array<sf::Vertex, 5>> DrawDebug::DrawPathArrows(const std::vector<sf::Vector2f>& positions, 
+    const float size, const sf::Color& color)
+{
+    const auto& grid = Pacman::GetGrid();
+    std::vector<std::array<sf::Vertex, 5>> pathArrows;
+
+    for (unsigned int i = 1; i < positions.size(); ++i)
+    {
+        pathArrows.push_back(DrawArrow(grid->GetCellCenterPosition(positions[i]), Utility::ConvertGridDirectionToDirection(grid->GetCellGridPosition(positions[i]) - grid->GetCellGridPosition(positions[i - 1])), size, color));
+    }
+
+    return pathArrows;
+}
+
+void DrawDebug::DrawPathArrowsPersistant(const std::vector<sf::Vector2f>& positions, const float size,
+    const sf::Color& color)
+{
+    for (const auto& pathArrow: DrawPathArrows(positions, size, color))
+    {
+        mDrawArrows.push_back(pathArrow);
+    }
+}
+
+std::vector<std::array<sf::Vertex, 5>> DrawDebug::DrawPathArrows(const std::vector<sf::Vector2i>& positions,
+                                                                 const float size, const sf::Color& color)
+{
+    const auto& grid = Pacman::GetGrid();
+    std::vector<std::array<sf::Vertex, 5>> pathArrows;
+
+    for (unsigned int i = 1; i < positions.size(); ++i)
+    {
+        pathArrows.push_back(DrawArrow(grid->GetCellCenterPosition(positions[i]), Utility::ConvertGridDirectionToDirection(positions[i] - positions[i - 1]), size, color));
+    }
+
+    return pathArrows;
+}
+
+void DrawDebug::DrawPathArrowsPersistant(const std::vector<sf::Vector2i>& positions, const float size,
+    const sf::Color& color)
+{
+    for (const auto& pathArrow : DrawPathArrows(positions, size, color))
+    {
+        mDrawArrows.push_back(pathArrow);
+    }
+}
+
+sf::Text DrawDebug::DrawText(const std::string& text, const sf::Vector2f position, const sf::Color& color) const
+{
+    sf::Text textToDraw;
+
+    textToDraw.setFont(mFont);
+    textToDraw.setString(text);
+    textToDraw.setPosition(position);
+    textToDraw.setFillColor(color);
+
+    return textToDraw;
+}
+
+sf::Text DrawDebug::DrawCellCost(const int cost, const sf::Vector2i gridPosition, const sf::Color& color) const
+{
+    sf::Text text{ DrawText(std::to_string(cost), Pacman::GetGrid()->GetCellWorldPosition(gridPosition), color) };
+    // This is needed to be able to read different sizes of numbers in a cell.
+    if (cost < 10)
+    {
+        text.setPosition(text.getPosition() + sf::Vector2f{ 10.0f, -6.0f });
+    }
+    else if (cost < 100)
+    {
+        text.setLetterSpacing(0.1f);
+        text.setCharacterSize(24);
+        text.setPosition(text.getPosition() + sf::Vector2f{ 6.0f, -1.0f });
+    }
+    else if (cost < 1000)
+    {
+        text.setLetterSpacing(0.1f);
+        text.setCharacterSize(16);
+        text.setPosition(text.getPosition() + sf::Vector2f{ 5.0f, 4.0f });
+    }
+
+    return text;
 }
 
 

@@ -32,12 +32,12 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed
         mSprite.setTexture(mTexture);
     }
 
-    srand(time(0));
+    srand(static_cast<unsigned int>(time(0)));
 }
 
 void Enemy::Move(const float deltaTime)
 {
-    if (Utility::Distance(mPosition, mDestinationPosition) < 3.0f)
+    if (Utility::Distance(mPosition, mDestinationPosition) < CELL_REACHED_RADIUS)
     {
         const int randomNumber = rand() / (RAND_MAX / (4));
 

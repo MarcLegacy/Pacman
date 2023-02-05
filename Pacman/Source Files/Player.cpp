@@ -21,7 +21,7 @@ void Player::Move(const float deltaTime)
 
     // Checks if the destination has been reached before setting the next destination.
     // Also added immediate changing of direction when the character tries to move the other way around.
-    if (Utility::Distance(mPosition, mDestinationPosition) < 3.0f || IsGoingBack())
+    if (Utility::Distance(mPosition, mDestinationPosition) < CELL_REACHED_RADIUS || IsGoingBack())
     {
         if (!MoveToDirection(mDesiredDirection))
         {
