@@ -88,6 +88,40 @@ std::vector<std::shared_ptr<Cell>> Grid::GetNeighboringCells(const int x, const 
     return neighbouringCells;
 }
 
+std::shared_ptr<Cell> Grid::GetTeleportToCell(const int x, const int y)
+{
+    const int teleportIndex{ CheckIsTeleportCell(x, y) };
+
+    if (!teleportIndex)
+    {
+        std::cout << "Teleport Cell not found!" << std::endl;
+        return {};
+    }
+
+    for (auto iterator = mTeleportCellMap.find(teleportIndex); iterator != mTeleportCellMap.end(); ++iterator)
+    {
+        if (iterator->second != GetCell(x, y)) return iterator->second;
+    }
+
+    std::cout << "No linked teleport found!?" << std::endl;
+
+    return {};
+}
+
+int Grid::CheckIsTeleportCell(const int x, const int y)
+{
+    const auto currentCell{ GetCell(x, y) };
+    for (const auto& teleportCell : mTeleportCellMap)
+    {
+        if (teleportCell.second == currentCell)
+        {
+            return teleportCell.first;
+        }
+    }
+
+    return 0;
+}
+
 sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
 {
     if (number >= 0 && number < static_cast<int>(mEnemySpawnPositions.size()))
@@ -122,7 +156,7 @@ void Grid::SetupLevelLayout()
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 3, 0, 0, 0, 3, 3, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
     {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
@@ -151,8 +185,10 @@ void Grid::SetupGrid()
         for (int column = 0; column < mHeight; column++)
         {
             // Calculates position and retrieves the cell type to create a cell.
-            auto position = sf::Vector2f(static_cast<float>(row) * mCellSize, static_cast<float>(column) * mCellSize);
+            sf::Vector2f position{ static_cast<float>(row) * mCellSize, static_cast<float>(column) * mCellSize };
             CellType type = GetNumberFromLevelLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
+            bool isTeleportCell{ false };
+
             switch (GetNumberFromLevelLayout(row, column))
             {
             case 0: 
@@ -167,12 +203,20 @@ void Grid::SetupGrid()
                 break;
             case 3:
                 type = CellType::Empty;
-                    mEnemySpawnPositions.push_back(position);
+                mEnemySpawnPositions.push_back(position);
+                break;
+            case 4:
+                type = CellType::Empty;
+                isTeleportCell = true;
                 break;
             default:
                 std::cout << "Number from level layout not yet set!" << std::endl;
             }
             auto cell = std::make_shared<Cell>(position, type);
+            if (isTeleportCell)
+            {
+                mTeleportCellMap.insert(mTeleportCellMap.begin(), std::pair<int, std::shared_ptr<Cell>>(1, cell));    // 0 should eventually be the number of the teleport cell.
+            }
             cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
         }
 
@@ -200,6 +244,18 @@ void Grid::SetupTraversableCellMap()
             }
 
             mTraversableCellMap[cell] = traversableCells;
+        }
+    }
+
+    for (const auto& teleportFromCell : mTeleportCellMap)
+    {
+        for (const auto& teleportToCell : mTeleportCellMap)
+        {
+            if (teleportFromCell.first == teleportToCell.first && teleportFromCell.second != teleportToCell.second)
+            {
+                auto& vector = mTraversableCellMap[teleportFromCell.second];
+                vector.push_back(teleportToCell.second);
+            }
         }
     }
 }

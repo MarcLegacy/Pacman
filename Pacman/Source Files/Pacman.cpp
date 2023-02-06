@@ -38,6 +38,18 @@ Pacman::Pacman()
     //mPathfinder->AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition()));
 
     //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(sf::Vector2i{ 1, 1 }, sf::Vector2i{ 1, 5 }), 24.0f);
+
+    //mDrawDebug->DrawPathArrowsPersistant(mPathfinder->AStar(1, 14, 20, 14), 24.0f);
+    const auto& cell{ mGrid->GetTeleportToCell(0, 14) };
+    if (cell)
+    {
+        std::cout << mGrid->GetCellGridPosition(cell->GetPosition()).x << ", " << mGrid->GetCellGridPosition(cell->GetPosition()).y << std::endl;
+    }
+    else
+    {
+        std::cout << "Oui!" << std::endl;
+    }
+
 }
 
 Pacman::~Pacman()
@@ -120,7 +132,7 @@ void Pacman::Update(const float deltaTime)
             }
         }
 
-        std::cout << totalIndex << std::endl;
+        //std::cout << totalIndex << std::endl;
     }
 }
 
@@ -176,7 +188,7 @@ void Pacman::FPSTimer(const float deltaTime)
     }
 }
 
-void Pacman::DrawTraversableMap() const
+void Pacman::DrawTraversableMapPersistant() const
 {
     for (const auto& traversableCells : mGrid->GetTraversableCellMap())
     {

@@ -5,15 +5,33 @@
 #include "DrawDebug.h"
 #include "Grid.h"
 #include "Pacman.h"
+#include "Utility.h"
 
 
 Character::Character(const sf::Vector2f position, const float speed)
-    : Object(position), mSpeed(speed), mDestinationPosition(mPosition)
+    : Object(position), mSpeed(speed), mDestinationWorldPosition(mPosition)
 {
 }
 
 void Character::Update(const float deltaTime)
 {
+    const auto& grid = Pacman::GetGrid();
+
+    CheckCellChanged();
+
+    if (mOnCellChanged)
+    {
+        if (grid->CheckIsTeleportCell(mCurrentGridPosition))
+        {
+            mPosition = grid->GetTeleportToCell(mCurrentGridPosition)->GetCenterPosition(); // Teleports the character to the connected cell.
+            mDestinationWorldPosition = mPosition;
+        }
+        else
+        {
+            mPosition = grid->GetCellWorldPosition(mCurrentGridPosition);   // This makes sure we stay in the middle of the cell
+        }
+    }
+
     Move(deltaTime);
 
     mSprite.setPosition(mPosition);
@@ -41,7 +59,7 @@ bool Character::MoveToDirection(const Direction& direction)
     const auto& traversableCells = grid->GetTraversableCells(GetCenterPosition());
     if (std::find(traversableCells.begin(), traversableCells.end(), grid->GetCell(destinationGridPosition)) != traversableCells.end())
     {
-        mDestinationPosition = grid->GetCellWorldPosition(destinationGridPosition);
+        mDestinationWorldPosition = grid->GetCellWorldPosition(destinationGridPosition);
         mCurrentDirection = direction;
         return true;
     }
@@ -74,4 +92,20 @@ bool Character::IsGoingBack() const
     if (mCurrentDirection == Direction::Right && mDesiredDirection == Direction::Left) return true;
 
     return false;
+}
+
+void Character::CheckCellChanged()
+{
+    const auto& gridPosition = Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition());
+
+    // This replaces an event
+    if (Utility::Distance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS && mCurrentGridPosition != gridPosition)
+    {
+        mOnCellChanged = true;
+        mCurrentGridPosition = gridPosition;
+    }
+    else
+    {
+        mOnCellChanged = false;
+    }
 }

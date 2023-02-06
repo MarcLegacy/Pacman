@@ -38,7 +38,7 @@ private:
     void Draw();
     void PollEvents() const;
     void FPSTimer(const float deltaTime);
-    void DrawTraversableMap() const;
+    void DrawTraversableMapPersistant() const;
     void InitializeObjects();
     std::vector<sf::Vector2i> CollectCalculatedPaths() const;
 

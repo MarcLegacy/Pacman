@@ -19,11 +19,9 @@ void Player::Move(const float deltaTime)
 {
     PlayerInput();
 
-    CheckCellChanged();
-
     // Checks if the destination has been reached before setting the next destination.
     // Also added immediate changing of direction when the character tries to move the other way around.
-    if (Utility::Distance(mPosition, mDestinationPosition) < CELL_REACHED_RADIUS || IsGoingBack())
+    if (Utility::Distance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS || IsGoingBack())
     {
         if (!MoveToDirection(mDesiredDirection))
         {
@@ -32,7 +30,7 @@ void Player::Move(const float deltaTime)
             if (MoveToDirection(mCurrentDirection) && IsGoingBack())
             {
                 mCurrentDirection = mDesiredDirection;
-                mDestinationPosition = Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition());
+                mDestinationWorldPosition = Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition());
             }
         }
     }
@@ -63,20 +61,6 @@ void Player::PlayerInput()
     }
 }
 
-void Player::CheckCellChanged()
-{
-    const auto& gridPosition = Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition());
 
-    // This replaces an event
-    if (Utility::Distance(mPosition, mDestinationPosition) < CELL_REACHED_RADIUS && mCurrentGridPosition != gridPosition)
-    {
-        mOnCellChanged = true;
-        mCurrentGridPosition = gridPosition;
-    }
-    else
-    {
-        mOnCellChanged = false;
-    }
-}
 
 

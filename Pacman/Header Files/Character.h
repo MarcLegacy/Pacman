@@ -11,6 +11,8 @@ public:
     void Update(const float deltaTime) override;
     void Draw(sf::RenderTarget* target) override;
 
+    bool GetOnCellChanged() const { return mOnCellChanged; }
+
 protected:
     virtual void Move(const float deltaTime) = 0;
     bool MoveToDirection(const Direction& direction);
@@ -22,8 +24,13 @@ protected:
     float mSpeed{ 100.0f };
     Direction mCurrentDirection{ Direction::Left }; // The pacman game I played, always made the player start left.
     Direction mDesiredDirection{ mCurrentDirection };
-    sf::Vector2f mDestinationPosition{};
+    sf::Vector2f mDestinationWorldPosition{};
+    sf::Vector2i mCurrentGridPosition{};
+    bool mOnCellChanged{ false };
 
     // TODO: Write function that will reset the position of the character when it's position is at a wall, for safety.
+
+private:
+    void CheckCellChanged();
 };
 

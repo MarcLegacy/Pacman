@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <set>
 #include <unordered_map>
 #include <vector>
 #include <SFML/System/Vector2.hpp>
@@ -20,7 +21,7 @@ public:
 
     int GetGridWidth() const { return mWidth; }
     int GetGridHeight() const { return mHeight; }
-    sf::Vector2i GetGridSize() { return {mWidth, mHeight}; }
+    sf::Vector2i GetGridSize() { return { mWidth, mHeight }; }
 
     float GetCellSize() const { return mCellSize; }
 
@@ -28,13 +29,13 @@ public:
     std::shared_ptr<Cell> GetCell(const sf::Vector2i gridPosition) { return GetCell(gridPosition.x, gridPosition.y); }
     std::shared_ptr<Cell> GetCell(const sf::Vector2f worldPosition) { return GetCell(GetCellGridPosition(worldPosition)); }
 
-    sf::Vector2i GetCellGridPosition(const int x, const int y) { return {x, y}; }
+    sf::Vector2i GetCellGridPosition(const int x, const int y) { return { x, y }; }
     sf::Vector2i GetCellGridPosition(const sf::Vector2f worldPosition) const;
 
     sf::Vector2f GetCellWorldPosition(const int x, const int y) const { return sf::Vector2f(static_cast<float>(x), static_cast<float>(y)) * mCellSize + mOriginPosition; }
     sf::Vector2f GetCellWorldPosition(const sf::Vector2i gridPosition) const { return GetCellWorldPosition(gridPosition.x, gridPosition.y); }
     // Function clams the given worldPosition to the cell's worldPosition.
-    sf::Vector2f GetCellWorldPosition(const sf::Vector2f worldPosition) const { return GetCellWorldPosition(GetCellGridPosition(worldPosition)); } 
+    sf::Vector2f GetCellWorldPosition(const sf::Vector2f worldPosition) const { return GetCellWorldPosition(GetCellGridPosition(worldPosition)); }
 
     sf::Vector2f GetCellCenterPosition(const int x, const int y) const { return GetCellCenterPosition(GetCellWorldPosition(x, y)); }
     sf::Vector2f GetCellCenterPosition(const sf::Vector2i gridPosition) const { return GetCellCenterPosition(gridPosition.x, gridPosition.y); }
@@ -48,6 +49,18 @@ public:
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const int x, const int y) { return IsCellValid(x, y) ? mTraversableCellMap[GetCell(x, y)] : std::vector<std::shared_ptr<Cell>>{}; }
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const sf::Vector2i gridPosition) { return GetTraversableCells(gridPosition.x, gridPosition.y); }
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const sf::Vector2f worldPosition) { return GetTraversableCells(GetCellGridPosition(worldPosition)); }
+
+    const std::unordered_multimap<int, std::shared_ptr<Cell>>& GetTeleportCellMap() const { return mTeleportCellMap; }
+    std::shared_ptr<Cell> GetTeleportToCell(const int x, const int y);
+    std::shared_ptr<Cell> GetTeleportToCell(const sf::Vector2i gridPosition) { return GetTeleportToCell(gridPosition.x, gridPosition.y); }
+    std::shared_ptr<Cell> GetTeleportToCell(const sf::Vector2f worldPosition) { return GetTeleportToCell(GetCellGridPosition(worldPosition)); }
+
+    // Return the index of it is a teleport cell, return 0 if not.
+    int CheckIsTeleportCell(const int x, const int y);
+    // Return the index of it is a teleport cell, return 0 if not.
+    int CheckIsTeleportCell(const sf::Vector2i gridPosition) { return CheckIsTeleportCell(gridPosition.x, gridPosition.y); }
+    // Return the index of it is a teleport cell, return 0 if not.
+    int CheckIsTeleportCell(const sf::Vector2f worldPosition) { return CheckIsTeleportCell(GetCellGridPosition(worldPosition)); }
 
     sf::Vector2f GetPlayerSpawnPosition() const { return mPlayerSpawnPosition; }
     sf::Vector2f GetEnemySpawnPosition(const int number) const;
@@ -74,5 +87,7 @@ private:
     std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> mTraversableCellMap{};
     sf::Vector2f mPlayerSpawnPosition{};
     std::vector<sf::Vector2f> mEnemySpawnPositions{};
+    std::unordered_multimap<int, std::shared_ptr<Cell>> mTeleportCellMap{};
+    //std::unordered_map<int, std::pair<std::shared_ptr<Cell>, std::shared_ptr<Cell>>> mTeleportCells{};
 };
 

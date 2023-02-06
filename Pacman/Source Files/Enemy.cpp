@@ -46,25 +46,8 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed
 
 void Enemy::Move(const float deltaTime)
 {
-    if (Utility::Distance(mPosition, mDestinationPosition) < CELL_REACHED_RADIUS)
+    if (Utility::Distance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS)
     {
-        //const int randomNumber = rand() / (RAND_MAX / (4));
-
-        //switch (randomNumber)
-        //{
-        //case 0:
-        //    mDesiredDirection = Direction::Up;
-        //    break;
-        //case 1:
-        //    mDesiredDirection = Direction::Down;
-        //    break;
-        //case 2:
-        //    mDesiredDirection = Direction::Left;
-        //    break;
-        //case 3:
-        //    mDesiredDirection = Direction::Right;
-        //    break;
-        //}
         FollowPath();
 
         MoveToDirection(mDesiredDirection);
@@ -81,7 +64,7 @@ void Enemy::Draw(sf::RenderTarget* target)
 
     for (const auto& pathArrow : DrawDebug::DrawPathArrows(mPath, 24.0f, mPathColor))
     {
-        target->draw(&pathArrow[0], pathArrow.size(), sf::LineStrip);
+        //target->draw(&pathArrow[0], pathArrow.size(), sf::LineStrip);
     }
 }
 
