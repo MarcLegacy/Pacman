@@ -1,5 +1,6 @@
 #include "Character.h"
 
+#include <iostream>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "DrawDebug.h"
@@ -15,22 +16,10 @@ Character::Character(const sf::Vector2f position, const float speed)
 
 void Character::Update(const float deltaTime)
 {
-    const auto& grid = Pacman::GetGrid();
-
     CheckCellChanged();
 
-    if (mOnCellChanged)
-    {
-        if (grid->CheckIsTeleportCell(mCurrentGridPosition))
-        {
-            mPosition = grid->GetTeleportToCell(mCurrentGridPosition)->GetCenterPosition(); // Teleports the character to the connected cell.
-            mDestinationWorldPosition = mPosition;
-        }
-        else
-        {
-            mPosition = grid->GetCellWorldPosition(mCurrentGridPosition);   // This makes sure we stay in the middle of the cell
-        }
-    }
+    CheckIfOnTeleport();
+    CheckIfOnWall();
 
     Move(deltaTime);
 
@@ -41,7 +30,7 @@ void Character::Draw(sf::RenderTarget* target)
 {
     Object::Draw(target);
 
-    target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
+    //target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
 }
 
 bool Character::MoveToDirection(const Direction& direction)
@@ -107,5 +96,35 @@ void Character::CheckCellChanged()
     else
     {
         mOnCellChanged = false;
+    }
+}
+
+void Character::CheckIfOnWall()
+{
+    const auto& grid = Pacman::GetGrid();
+
+    // Bandage to make sure the position of the character is reset should they ever get stuck inside a wall.
+    if (grid->GetCell(GetCenterPosition())->GetCellType() == CellType::Wall)
+    {
+        mPosition = grid->GetCellWorldPosition(grid->GetCellGridPosition(GetCenterPosition()) - sf::Vector2i{ static_cast<int>(GetMoveDirection(mCurrentDirection).x), static_cast<int>(GetMoveDirection(mCurrentDirection).y) });
+        mDestinationWorldPosition = mPosition;
+    }
+}
+
+void Character::CheckIfOnTeleport()
+{
+    const auto& grid = Pacman::GetGrid();
+
+    if (mOnCellChanged)
+    {
+        if (grid->CheckIsTeleportCell(mCurrentGridPosition))
+        {
+            mPosition = grid->GetTeleportToCell(mCurrentGridPosition)->GetCenterPosition(); // Teleports the character to the connected cell.
+            mDestinationWorldPosition = mPosition;
+        }
+        else
+        {
+            mPosition = grid->GetCellWorldPosition(mCurrentGridPosition);   // This makes sure we stay in the middle of the cell
+        }
     }
 }

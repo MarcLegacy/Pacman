@@ -32,5 +32,7 @@ protected:
 
 private:
     void CheckCellChanged();
+    void CheckIfOnWall();
+    void CheckIfOnTeleport();
 };
 

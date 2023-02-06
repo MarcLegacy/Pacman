@@ -1,5 +1,6 @@
 #include "Pacman.h"
 
+#include <fstream>
 #include <iostream>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -21,10 +22,15 @@ std::shared_ptr<Pathfinder> Pacman::mPathfinder{};
 
 Pacman::Pacman()
 {
+    ReadLayoutFromFile();
+    if (mLevelLayout.empty()) return;
     mEvent = std::make_unique<sf::Event>();
-    const sf::VideoMode videoMode = sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT);
+    const auto videoMode = sf::VideoMode(mLevelLayout[0].size() * static_cast<int>(CELL_SIZE), mLevelLayout.size() * static_cast<int>(CELL_SIZE));
     mWindow = std::make_unique<sf::RenderWindow>(sf::VideoMode(videoMode), "Pacman", sf::Style::Close);
     mWindow->setFramerateLimit(60);
+    mWindow->setPosition({ mWindow->getPosition().x, 0 });
+    mCurrentScreenPosition = mWindow->getPosition();
+    mGridSize = { static_cast<int>(mLevelLayout[0].size()), static_cast<int>(mLevelLayout.size()) };
     mFont.loadFromFile("Resource Files/Font.ttf");
 
     InitializeObjects();
@@ -73,6 +79,13 @@ void Pacman::Update(const float deltaTime)
 {
     PollEvents();
     FPSTimer(deltaTime);
+
+    // Makes sure that when the screen is dragged, that the game is paused to avoid creating a big difference in delta time and giving the player time to prepare for the game.
+    if (mCurrentScreenPosition != mWindow->getPosition())
+    {
+        mCurrentScreenPosition = mWindow->getPosition();
+        mGameState = GameState::Paused;
+    }
 
     if (mGameState != GameState::Playing) return;
 
@@ -177,6 +190,7 @@ void Pacman::PollEvents()
             break;
         }
     }
+        
 }
 
 void Pacman::FPSTimer(const float deltaTime)
@@ -205,7 +219,7 @@ void Pacman::DrawTraversableMapPersistant() const
 
 void Pacman::InitializeObjects()
 {
-    mGrid = std::make_shared<Grid>(28, 31, CELL_SIZE);
+    mGrid = std::make_shared<Grid>(mGridSize.x, mGridSize.y, CELL_SIZE, mLevelLayout);
     mObjects.push_back(mGrid);
     mDrawDebug = std::make_shared<DrawDebug>();
     mObjects.push_back(mDrawDebug);
@@ -268,6 +282,28 @@ void Pacman::ShowGameText()
     }
 
     mWindow->draw(text);
+}
+
+void Pacman::ReadLayoutFromFile()
+{
+    std::vector<std::string> levelLayout;
+    std::string line{};
+    std::ifstream file("Resource Files/LevelLayout.txt");
+
+    if (file.is_open())
+    {
+        while (std::getline(file, line))
+        {
+            mLevelLayout.push_back(line);
+        }
+
+        file.close();
+    }
+    else
+    {
+        std::cout << "Could not open file!" << std::endl;
+        std::cout << "make sure the txt file is inside the 'Resource Files' folder and called 'LevelLayout'!" << std::endl;
+    }
 }
 
 

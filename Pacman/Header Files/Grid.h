@@ -14,7 +14,7 @@ class Cell;
 class Grid : public Object
 {
 public:
-    Grid(const int width, const int height, const float cellSize, const sf::Vector2f originPosition = {});
+    Grid(const int width, const int height, const float cellSize, const std::vector<std::string>& levelLayout, const sf::Vector2f originPosition = {});
 
     void Update(float deltaTime) override;
     void Draw(sf::RenderTarget* target) override;
@@ -67,10 +67,8 @@ public:
 
 
 private:
-    std::vector<std::string> GetLayoutFromFile() const;
-    void SetupLevelLayout();
+    void SetupGridFromFile(const std::vector<std::string>& levelLayout);
     void SetupGrid();
-    void SetupGridFromFile();
     void SetupTraversableCellMap();
 
     int GetNumberFromLevelLayout(const int x, const int y) const { return IsCellValid(x, y) ? mLevelLayout[y].at(x) : 0; };

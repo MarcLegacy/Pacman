@@ -52,16 +52,17 @@ private:
     std::vector<sf::Vector2i> CollectCalculatedPaths() const;
     void CheckCharacterContact();
     void ShowGameText();
-
-    const int SCREEN_WIDTH{ 896 };
-    const int SCREEN_HEIGHT{ 992 };
+    void ReadLayoutFromFile();
 
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};
 
     float mFpsTimer{};
     GameState mGameState{ GameState::Start };
-    sf::Font mFont;
+    sf::Font mFont{};
+    sf::Vector2i mCurrentScreenPosition{};
+    std::vector<std::string> mLevelLayout{};
+    sf::Vector2i mGridSize{};
 
     // Objects
     std::vector<std::shared_ptr<Object>> mObjects{};
