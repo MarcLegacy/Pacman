@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <SFML/Graphics/Font.hpp>
 
 #include "Pathfinder.h"
 
@@ -17,6 +18,14 @@ namespace sf
     class Event;
     class RenderWindow;
 }
+
+enum class GameState
+{
+    Start,
+    Paused,
+    Playing,
+    GameOver
+};
 
 class Pacman
 {
@@ -36,20 +45,23 @@ public:
 
 private:
     void Draw();
-    void PollEvents() const;
+    void PollEvents();
     void FPSTimer(const float deltaTime);
     void DrawTraversableMapPersistant() const;
     void InitializeObjects();
     std::vector<sf::Vector2i> CollectCalculatedPaths() const;
+    void CheckCharacterContact();
+    void ShowGameText();
 
     const int SCREEN_WIDTH{ 896 };
     const int SCREEN_HEIGHT{ 992 };
-
 
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};
 
     float mFpsTimer{};
+    GameState mGameState{ GameState::Start };
+    sf::Font mFont;
 
     // Objects
     std::vector<std::shared_ptr<Object>> mObjects{};

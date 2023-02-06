@@ -25,8 +25,11 @@ Pacman::Pacman()
     const sf::VideoMode videoMode = sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT);
     mWindow = std::make_unique<sf::RenderWindow>(sf::VideoMode(videoMode), "Pacman", sf::Style::Close);
     mWindow->setFramerateLimit(60);
+    mFont.loadFromFile("Resource Files/Font.ttf");
 
     InitializeObjects();
+
+    mPathfinder = std::make_shared<Pathfinder>();
 
     //for (const auto& cellGridPosition: Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetPosition())))
     //{
@@ -40,16 +43,6 @@ Pacman::Pacman()
     //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(sf::Vector2i{ 1, 1 }, sf::Vector2i{ 1, 5 }), 24.0f);
 
     //mDrawDebug->DrawPathArrowsPersistant(mPathfinder->AStar(1, 14, 20, 14), 24.0f);
-    const auto& cell{ mGrid->GetTeleportToCell(0, 14) };
-    if (cell)
-    {
-        std::cout << mGrid->GetCellGridPosition(cell->GetPosition()).x << ", " << mGrid->GetCellGridPosition(cell->GetPosition()).y << std::endl;
-    }
-    else
-    {
-        std::cout << "Oui!" << std::endl;
-    }
-
 }
 
 Pacman::~Pacman()
@@ -79,13 +72,16 @@ bool Pacman::IsRunning() const
 void Pacman::Update(const float deltaTime)
 {
     PollEvents();
+    FPSTimer(deltaTime);
+
+    if (mGameState != GameState::Playing) return;
 
     for (const auto& object : mObjects)
     {
         object->Update(deltaTime);
     }
 
-    FPSTimer(deltaTime);
+    CheckCharacterContact();
 
     if (mPlayer->GetOnCellChanged())
     {
@@ -143,10 +139,7 @@ void Pacman::Draw()
         object->Draw(mWindow.get());
     }
 
-    //const auto& arrow = mDrawDebug->DrawArrow({ 500, 500 }, Direction::Right, 500, sf::Color::Red);
-    //mWindow->draw(&arrow[0], arrow.size(), sf::LineStrip);
-
-    //mWindow->draw(mDrawDebug->DrawText("something!", mGrid->GetCellWorldPosition(mPlayer->GetCenterPosition())));
+    ShowGameText();
 }
 
 void Pacman::Render()
@@ -156,7 +149,7 @@ void Pacman::Render()
     mWindow->display();
 }
 
-void Pacman::PollEvents() const
+void Pacman::PollEvents()
 {
     while (mWindow->pollEvent(*mEvent))
     {
@@ -168,6 +161,17 @@ void Pacman::PollEvents() const
         case sf::Event::KeyPressed:
             if (mEvent->key.code == sf::Keyboard::Escape)
                 mWindow->close();
+            if (mEvent->key.code == sf::Keyboard::Space)
+            {
+                if (mGameState == GameState::Start || mGameState == GameState::Paused)
+                {
+                    mGameState = GameState::Playing;
+                }
+                else if (mGameState != GameState::GameOver)
+                {
+                    mGameState = GameState::Paused;
+                }
+            }
             break;
         default:
             break;
@@ -205,7 +209,6 @@ void Pacman::InitializeObjects()
     mObjects.push_back(mGrid);
     mDrawDebug = std::make_shared<DrawDebug>();
     mObjects.push_back(mDrawDebug);
-    mPathfinder = std::make_shared<Pathfinder>();
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
     const auto enemyBlue = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(0), SkinColor::Blue);
@@ -228,6 +231,44 @@ std::vector<sf::Vector2i> Pacman::CollectCalculatedPaths() const
     }
 
     return paths;
+}
+
+void Pacman::CheckCharacterContact()
+{
+    for (const auto& enemy : mEnemies)
+    {
+        if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
+        {
+            std::cout << "Death!" << std::endl;
+            mGameState = GameState::GameOver;
+        }
+    }
+}
+
+void Pacman::ShowGameText()
+{
+    sf::Text text{};
+    text.setFont(mFont);
+
+    switch (mGameState)
+    {
+    case GameState::Start:
+        text.setString("Press 'Space' to start.");
+        text.setPosition(200.0f, 440.0f);
+        break;
+    case GameState::Playing:
+        break;
+    case GameState::Paused:
+        text.setString("Press 'Space' to continue.");
+        text.setPosition(180.0f, 440.0f);
+        break;
+    case GameState::GameOver:
+        text.setString("Game Over!");
+        text.setPosition(350.0f, 440.0f);
+        break;
+    }
+
+    mWindow->draw(text);
 }
 
 

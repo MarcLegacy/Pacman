@@ -185,7 +185,8 @@ void Grid::SetupGrid()
         for (int column = 0; column < mHeight; column++)
         {
             // Calculates position and retrieves the cell type to create a cell.
-            sf::Vector2f position{ static_cast<float>(row) * mCellSize, static_cast<float>(column) * mCellSize };
+            sf::Vector2f position{ GetCellWorldPosition(row, column) };//static_cast<float>(row)* mCellSize, static_cast<float>(column)* mCellSize
+        
             CellType type = GetNumberFromLevelLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
             bool isTeleportCell{ false };
 
