@@ -40,6 +40,7 @@ private:
     void FPSTimer(const float deltaTime);
     void DrawTraversableMap() const;
     void InitializeObjects();
+    std::vector<sf::Vector2i> CollectCalculatedPaths() const;
 
     const int SCREEN_WIDTH{ 896 };
     const int SCREEN_HEIGHT{ 992 };

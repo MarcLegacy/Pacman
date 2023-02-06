@@ -17,15 +17,19 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed
     {
     case SkinColor::Blue:
         fileName = "Resource Files/EnemyBlue.png";
+        mPathColor = sf::Color::Blue;
         break;
     case SkinColor::Orange:
         fileName = "Resource Files/EnemyOrange.png";
+        mPathColor = { 230, 126, 34 };
         break;
     case SkinColor::Pink:
         fileName = "Resource Files/EnemyPink.png";
+        mPathColor = { 245, 183, 177 };
         break;
     case SkinColor::Red:
         fileName = "Resource Files/EnemyRed.png";
+        mPathColor = sf::Color::Red;
         break;
     default:
         std::cout << "Skincolor given that hasn't been set yet!" << std::endl;
@@ -75,7 +79,7 @@ void Enemy::Draw(sf::RenderTarget* target)
 {
     Character::Draw(target);
 
-    for (const auto& pathArrow : DrawDebug::DrawPathArrows(mPath, 24.0f, sf::Color::Red))
+    for (const auto& pathArrow : DrawDebug::DrawPathArrows(mPath, 24.0f, mPathColor))
     {
         target->draw(&pathArrow[0], pathArrow.size(), sf::LineStrip);
     }
@@ -83,11 +87,11 @@ void Enemy::Draw(sf::RenderTarget* target)
 
 void Enemy::FindPath(const sf::Vector2i targetGridPosition)
 {
-    if (std::find(mPath.begin(), mPath.end(), targetGridPosition) != mPath.end()) return;
+    //if (std::find(mPath.begin(), mPath.end(), targetGridPosition) != mPath.end()) return;
 
-    mPath.clear();
+    //mPath.clear();
 
-    mPath = Pacman::GetPathfinder()->AStar(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()), targetGridPosition);
+    mPath = Pacman::GetPathfinder()->AStar(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()), targetGridPosition, mIsDoingTactic);
     mCurrentPathIndex = 0;
 }
 
@@ -104,7 +108,7 @@ void Enemy::FollowPath()
     }
 
     // TODO: Make sure the pathing is done when they are on the cell they're currently traveling to.
-    if (mPath.size() > 1 && mPath[1] == grid->GetCellGridPosition(GetCenterPosition()) && mCurrentPathIndex == 0)   // Bandage fix to battle them moving back because they repathed too soon.
+    if (mPath.size() > 2 && mPath[1] == grid->GetCellGridPosition(GetCenterPosition()) && mCurrentPathIndex == 0)   // Bandage fix to battle them moving back because they repathed too soon.
     {
         mCurrentPathIndex = 2;
     }

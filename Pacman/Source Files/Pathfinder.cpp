@@ -8,29 +8,23 @@
 #include "Pacman.h"
 #include "Utility.h"
 
-struct VectorHasher
-{
-    std::size_t operator()(const sf::Vector2i& key) const
-    {
-        return (std::hash<int>()(key.x) ^ std::hash<int>()(key.y) << 1);
-    }
-};
+
 
 Pathfinder::Pathfinder()
 {
-    //const auto& grid = Pacman::GetGrid();
-    //for (const auto& cell : grid->GetTraversableCellMap())
-    //{
-    //    mCellCostMap[grid->GetCellGridPosition(cell.first->GetPosition())] = 0;
-    //}
+    const auto& grid = Pacman::GetGrid();
+    for (const auto& cell : grid->GetTraversableCellMap())
+    {
+        mCellCostMap[grid->GetCellGridPosition(cell.first->GetPosition())] = 1;
+    }
 }
 
-std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition, const sf::Vector2i targetGridPosition) const
+std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition, const sf::Vector2i targetGridPosition, const bool weighted) const
 {
     const auto& grid = Pacman::GetGrid();
-    std::unordered_map<sf::Vector2i, int, VectorHasher> cellTotalCostMap;
-    std::unordered_map<sf::Vector2i, sf::Vector2i, VectorHasher> cameFromMap;
-    std::unordered_map<sf::Vector2i, int, VectorHasher> priorityQueue;
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> cellTotalCostMap;
+    std::unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHasher> cameFromMap;
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> priorityQueue;    // TODO: change this to a std::priority_queue.
     bool targetFound = false;
 
     cellTotalCostMap[startGridPosition] = 0;
@@ -39,37 +33,37 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition
     while (!priorityQueue.empty())
     {
         // Get the current lowest cost cell
-        int lowestCost = INT_MAX;
-        sf::Vector2i lowestGridPosition;
-        for (const auto& currentGridPosition : priorityQueue)
+        int currentCost = INT_MAX;
+        sf::Vector2i currentGridPosition;
+        for (const auto& gridPosition : priorityQueue)
         {
-            if (currentGridPosition.second < lowestCost)
+            if (gridPosition.second < currentCost)
             {
-                lowestCost = currentGridPosition.second;
-                lowestGridPosition = currentGridPosition.first;
+                currentCost = gridPosition.second;
+                currentGridPosition = gridPosition.first;
             }
         }
 
-        if (lowestGridPosition == targetGridPosition)
+        if (currentGridPosition == targetGridPosition)
         {
             targetFound = true;
             break;    // Don't need to calculate the rest if the target has been found.
         }
 
-        priorityQueue.erase(lowestGridPosition);
+        priorityQueue.erase(currentGridPosition);
 
         // Search neighboring cells that can be travelled to.
-        for (const auto& traversableCell : grid->GetTraversableCells(lowestGridPosition))
+        for (const auto& traversableCell : grid->GetTraversableCells(currentGridPosition))
         {
-            const sf::Vector2i cellGridPosition{ grid->GetCellGridPosition(traversableCell->GetPosition()) };
-            if (cellTotalCostMap.find(cellGridPosition) == cellTotalCostMap.end()) // avoid cells that are already in the map, this only works when the travel cost is even in cells
+            const sf::Vector2i traversableCellGridPosition{ grid->GetCellGridPosition(traversableCell->GetPosition()) };
+            if (cellTotalCostMap.find(traversableCellGridPosition) == cellTotalCostMap.end()) // avoid cells that are already in the map, this only works when the travel cost is even in cells
             {
-                //const int cellCost = mCellCostMap.at(cellGridPosition);
-                const int totalCost = lowestCost + 1 + Utility::ManhattanDistance(cellGridPosition, targetGridPosition);    // add the cell cost (=1) and the distance to the target to the current cost.
+                const int cellCost = weighted ? mCellCostMap.at(traversableCellGridPosition) : 1; // if the function is weighted. then cell cost is based on how many enemies already pathed over the cell.
+                const int totalCost = currentCost + cellCost + Utility::ManhattanDistance(traversableCellGridPosition, targetGridPosition); 
 
-                cellTotalCostMap[cellGridPosition] = totalCost;
-                cameFromMap[cellGridPosition] = lowestGridPosition;
-                priorityQueue[cellGridPosition] = totalCost;
+                cellTotalCostMap[traversableCellGridPosition] = totalCost;
+                cameFromMap[traversableCellGridPosition] = currentGridPosition;
+                priorityQueue[traversableCellGridPosition] = totalCost;
             }
         }
     }
@@ -98,13 +92,29 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition
 }
 
 std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2f startWorldPosition,
-    const sf::Vector2f targetWorldPosition) const
+    const sf::Vector2f targetWorldPosition, const bool weighted) const
 {
     const auto& grid = Pacman::GetGrid();
-    return AStar(grid->GetCellGridPosition(startWorldPosition), grid->GetCellGridPosition(targetWorldPosition));
+    return AStar(grid->GetCellGridPosition(startWorldPosition), grid->GetCellGridPosition(targetWorldPosition), weighted);
 }
 
-void Pathfinder::DrawCellCosts(const std::unordered_map<sf::Vector2i, int, VectorHasher>& cellCostMap)
+void Pathfinder::SetCellCosts(const std::vector<sf::Vector2i>& paths)
+{
+    for (auto& cellCost : mCellCostMap)
+    {
+        cellCost.second = 1;
+
+        for (const auto& cell : paths)
+        {
+            if (cellCost.first == cell)
+            {
+                cellCost.second = cellCost.second + 20;
+            }
+        }
+    }
+}
+
+void Pathfinder::DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const
 {
     const auto& drawDebug = Pacman::GetDrawDebug();
 

@@ -44,7 +44,7 @@ public:
     std::vector<std::shared_ptr<Cell>> GetNeighboringCells(const sf::Vector2i gridPosition) { return GetNeighboringCells(gridPosition.x, gridPosition.y); }
     std::vector<std::shared_ptr<Cell>> GetNeighboringCells(const sf::Vector2f worldPosition) { return GetNeighboringCells(GetCellGridPosition(worldPosition)); }
 
-    std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> GetTraversableCellMap() const { return mTraversableCellMap; }
+    const std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>>& GetTraversableCellMap() const { return mTraversableCellMap; }
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const int x, const int y) { return IsCellValid(x, y) ? mTraversableCellMap[GetCell(x, y)] : std::vector<std::shared_ptr<Cell>>{}; }
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const sf::Vector2i gridPosition) { return GetTraversableCells(gridPosition.x, gridPosition.y); }
     std::vector<std::shared_ptr<Cell>> GetTraversableCells(const sf::Vector2f worldPosition) { return GetTraversableCells(GetCellGridPosition(worldPosition)); }

@@ -12,11 +12,17 @@ public:
     void Draw(sf::RenderTarget* target) override;
 
     void FindPath(const sf::Vector2i targetGridPosition);
+    const std::vector<sf::Vector2i>& GetPath() const { return mPath; }
+    void ClearPath() { mPath.clear(); }
+
+    bool mIsDoingTactic{ false };
 
 private:
     void FollowPath();
 
     std::vector<sf::Vector2i> mPath{};
     unsigned int mCurrentPathIndex{};
+    sf::Color mPathColor{};
+
 };
 

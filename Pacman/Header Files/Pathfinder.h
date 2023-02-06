@@ -3,19 +3,31 @@
 #include <vector>
 #include <SFML/System/Vector2.hpp>
 
-struct VectorHasher;
+struct Vector2iHasher
+{
+    std::size_t operator()(const sf::Vector2i& key) const
+    {
+        // hashes the integers individually and then combines them.
+        return std::hash<int>()(key.x) * std::hash<int>()(key.y);   // If something goes wrong, use the caret ('^') as operator.
+    }
+};
 
 class Pathfinder
 {
 public:
     Pathfinder();
     ~Pathfinder() = default;
-    std::vector<sf::Vector2i> AStar(const int startX, const int startY, const int targetX, const int targetY) const { return AStar(sf::Vector2i{ startX, startY }, sf::Vector2i{ targetX, targetY }); }
-    std::vector<sf::Vector2i> AStar(const sf::Vector2i startGridPosition, const sf::Vector2i targetGridPosition) const;
-    std::vector<sf::Vector2i> AStar(const sf::Vector2f startWorldPosition, const sf::Vector2f targetWorldPosition) const;
+    // Returns the shortest path, weighted means if the cells count other paths as weight.
+    std::vector<sf::Vector2i> AStar(const int startX, const int startY, const int targetX, const int targetY, const bool weighted = false) const { return AStar(sf::Vector2i{ startX, startY }, sf::Vector2i{ targetX, targetY }, weighted); }
+    // Returns the shortest path, weighted means if the cells count other paths as weight.
+    std::vector<sf::Vector2i> AStar(const sf::Vector2i startGridPosition, const sf::Vector2i targetGridPosition, const bool weighted = false) const;
+    // Returns the shortest path, weighted means if the cells count other paths as weight.
+    std::vector<sf::Vector2i> AStar(const sf::Vector2f startWorldPosition, const sf::Vector2f targetWorldPosition, const bool weighted = false) const;
+
+    void SetCellCosts(const std::vector<sf::Vector2i>& paths);
 
 private:
-    void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, VectorHasher>& cellCostMap);
-    //std::unordered_map<sf::Vector2i, int, VectorHasher> mCellCostMap{};
+    void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const;
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
 };
 

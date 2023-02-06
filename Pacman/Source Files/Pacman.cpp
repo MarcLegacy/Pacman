@@ -13,6 +13,7 @@
 #include "Object.h"
 #include "Pathfinder.h"
 #include "Player.h"
+#include "Utility.h"
 
 std::shared_ptr<Grid> Pacman::mGrid{};
 std::shared_ptr<DrawDebug> Pacman::mDrawDebug{};
@@ -32,7 +33,9 @@ Pacman::Pacman()
     //    mDrawDebug->DrawCellCostPersistant(0, cellGridPosition);
     //}
 
-    //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition())), 24.0f);
+    //mDrawDebug->DrawPathArrowsPersistant(mPathfinder->AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition())), 24.0f);
+
+    //mPathfinder->AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition()));
 
     //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(sf::Vector2i{ 1, 1 }, sf::Vector2i{ 1, 5 }), 24.0f);
 }
@@ -47,6 +50,11 @@ Pacman::~Pacman()
     if (mDrawDebug != nullptr)
     {
         mDrawDebug = nullptr;
+    }
+
+    if (mPathfinder != nullptr)
+    {
+        mPathfinder = nullptr;
     }
 }
 
@@ -69,10 +77,50 @@ void Pacman::Update(const float deltaTime)
 
     if (mPlayer->GetOnCellChanged())
     {
+        std::vector<unsigned int> orderRank;
         for (const auto& enemy : mEnemies)
         {
-            enemy->FindPath(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()));
+            int rank{};
+            for (const auto& enemyToCheck : mEnemies)
+            {
+                if (enemy == enemyToCheck) continue;
+
+                if (enemy->GetPath().size() > enemyToCheck->GetPath().size())
+                {
+                    rank++;
+                }
+            }
+            orderRank.push_back(rank);
         }
+
+        for (const auto& enemy : mEnemies)
+        {
+            enemy->ClearPath();
+        }
+
+        int totalIndex{};
+
+        for (int i = 0; i < orderRank.size(); ++i)
+        {
+            unsigned int index = orderRank[i];
+            totalIndex += index;
+
+            mEnemies[index]->FindPath(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()));
+
+            const int distance = Utility::ManhattanDistance(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[index]->GetCenterPosition()));
+            if (distance < 10)
+            {
+                //std::cout << "Operation: 'Surround Mouse' activated!" << std::endl;
+                mPathfinder->SetCellCosts(CollectCalculatedPaths());
+                mEnemies[index]->mIsDoingTactic = true;
+            }
+            else if (distance > 15)
+            {
+                mEnemies[index]->mIsDoingTactic = false;
+            }
+        }
+
+        std::cout << totalIndex << std::endl;
     }
 }
 
@@ -145,6 +193,7 @@ void Pacman::InitializeObjects()
     mObjects.push_back(mGrid);
     mDrawDebug = std::make_shared<DrawDebug>();
     mObjects.push_back(mDrawDebug);
+    mPathfinder = std::make_shared<Pathfinder>();
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
     const auto enemyBlue = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(0), SkinColor::Blue);
@@ -156,6 +205,20 @@ void Pacman::InitializeObjects()
     mObjects.insert(mObjects.end(), mEnemies.begin(), mEnemies.end());
 
 }
+
+std::vector<sf::Vector2i> Pacman::CollectCalculatedPaths() const
+{
+    std::vector<sf::Vector2i> paths;
+
+    for (const auto& enemy : mEnemies)
+    {
+        paths.insert(paths.end(), enemy->GetPath().begin(), enemy->GetPath().end());
+    }
+
+    return paths;
+}
+
+
 
 
 
