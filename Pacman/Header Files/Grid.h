@@ -25,7 +25,7 @@ public:
 
     float GetCellSize() const { return mCellSize; }
 
-    std::shared_ptr<Cell> GetCell(const int x, const int y) { return IsCellValid(x, y) ? mGridCells[x][y] : nullptr; }
+    std::shared_ptr<Cell> GetCell(const int x, const int y) { return IsCellValid(x, y) ? mGridCells[y][x] : nullptr; }
     std::shared_ptr<Cell> GetCell(const sf::Vector2i gridPosition) { return GetCell(gridPosition.x, gridPosition.y); }
     std::shared_ptr<Cell> GetCell(const sf::Vector2f worldPosition) { return GetCell(GetCellGridPosition(worldPosition)); }
 
@@ -67,8 +67,10 @@ public:
 
 
 private:
+    std::vector<std::string> GetLayoutFromFile() const;
     void SetupLevelLayout();
     void SetupGrid();
+    void SetupGridFromFile();
     void SetupTraversableCellMap();
 
     int GetNumberFromLevelLayout(const int x, const int y) const { return IsCellValid(x, y) ? mLevelLayout[y].at(x) : 0; };

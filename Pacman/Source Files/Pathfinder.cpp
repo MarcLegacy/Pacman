@@ -8,8 +8,6 @@
 #include "Pacman.h"
 #include "Utility.h"
 
-
-
 Pathfinder::Pathfinder()
 {
     const auto& grid = Pacman::GetGrid();

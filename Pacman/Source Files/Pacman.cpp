@@ -108,7 +108,7 @@ void Pacman::Update(const float deltaTime)
 
         int totalIndex{};
 
-        for (int i = 0; i < orderRank.size(); ++i)
+        for (unsigned int i = 0; i < orderRank.size(); ++i)
         {
             unsigned int index = orderRank[i];
             totalIndex += index;
@@ -239,7 +239,6 @@ void Pacman::CheckCharacterContact()
     {
         if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
         {
-            std::cout << "Death!" << std::endl;
             mGameState = GameState::GameOver;
         }
     }

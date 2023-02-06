@@ -1,14 +1,15 @@
 #include "Grid.h"
 
 #include <array>
+#include <fstream>
 #include <iostream>
 #include <memory>
 
 Grid::Grid(const int width, const int height, const float cellSize, const sf::Vector2f originPosition)
 : mWidth(width), mHeight(height), mCellSize(cellSize), mOriginPosition(originPosition)
 {
-    SetupLevelLayout();
-    SetupGrid();
+    //SetupLevelLayout();
+    SetupGridFromFile();
     SetupTraversableCellMap();
 }
 
@@ -132,6 +133,30 @@ sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
     return sf::Vector2f{};
 }
 
+std::vector<std::string> Grid::GetLayoutFromFile() const
+{
+    std::vector<std::string> levelLayout;
+    std::string line{};
+    std::ifstream file("Resource Files/LevelLayout.txt");
+
+    if (file.is_open())
+    {
+        while(std::getline(file, line))
+        {
+            levelLayout.push_back(line);
+        }
+
+        file.close();
+    }
+    else
+    {
+        std::cout << "Could not open file!" << std::endl;
+        return {};
+    }
+
+    return levelLayout;
+}
+
 void Grid::SetupLevelLayout()
 {
     // 0 = Empty
@@ -224,6 +249,50 @@ void Grid::SetupGrid()
         mGridCells.push_back(std::move(cellRow));
     }
 
+}
+
+void Grid::SetupGridFromFile()
+{
+    const std::vector<std::string>& levelLayout = GetLayoutFromFile();
+
+    for (unsigned int column = 0; column < levelLayout.size(); ++column)
+    {
+        const std::string& layoutString = levelLayout[column];
+        std::vector<std::shared_ptr<Cell>> cellRow{};
+
+        for (unsigned int row = 0; row < layoutString.size(); ++row)
+        {
+            const auto& character = layoutString[row];
+            // Calculates position and retrieves the cell type to create a cell.
+            sf::Vector2f position{ GetCellWorldPosition(row, column) };//static_cast<float>(row)* mCellSize, static_cast<float>(column)* mCellSize
+
+            CellType type = character == '*' ? CellType::Wall : CellType::Empty;
+            bool isTeleportCell{ false };
+
+            switch (character)
+            {
+            case 'P':
+                mPlayerSpawnPosition = position;
+                break;
+            case 'G':
+                mEnemySpawnPositions.push_back(position);
+                break;
+            case '1':
+                isTeleportCell = true;
+                break;
+            //default:
+                //break;
+            }
+            auto cell = std::make_shared<Cell>(position, type);
+            if (isTeleportCell)
+            {
+                mTeleportCellMap.insert(mTeleportCellMap.begin(), std::pair<int, std::shared_ptr<Cell>>(1, cell));    // 0 should eventually be the number of the teleport cell.
+            }
+            cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
+        }
+
+        mGridCells.push_back(std::move(cellRow));
+    }
 }
 
 void Grid::SetupTraversableCellMap()
