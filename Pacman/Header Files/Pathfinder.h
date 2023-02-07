@@ -28,7 +28,7 @@ public:
 private:
     void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const;
 
-    const int EXTRA_WEIGHT{ 30 };
+    const int EXTRA_WEIGHT{ 50 };
 
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
 };
