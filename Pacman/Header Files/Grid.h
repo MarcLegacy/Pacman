@@ -64,12 +64,13 @@ public:
 
     sf::Vector2f GetPlayerSpawnPosition() const { return mPlayerSpawnPosition; }
     sf::Vector2f GetEnemySpawnPosition(const int number) const;
-
+    const std::vector<sf::Vector2i>& GetCrossroadPositions() const { return mCrossroadPositions; }
 
 private:
     void SetupGridFromFile(const std::vector<std::string>& levelLayout);
     void SetupGrid();
     void SetupTraversableCellMap();
+    void SetupCrossroadPositions();
 
     int GetNumberFromLevelLayout(const int x, const int y) const { return IsCellValid(x, y) ? mLevelLayout[y].at(x) : 0; };
     int GetNumberFromLevelLayout(const sf::Vector2i gridPosition) const { return GetNumberFromLevelLayout(gridPosition.x, gridPosition.y); };
@@ -88,6 +89,6 @@ private:
     sf::Vector2f mPlayerSpawnPosition{};
     std::vector<sf::Vector2f> mEnemySpawnPositions{};
     std::unordered_multimap<int, std::shared_ptr<Cell>> mTeleportCellMap{};
-    //std::unordered_map<int, std::pair<std::shared_ptr<Cell>, std::shared_ptr<Cell>>> mTeleportCells{};
+    std::vector<sf::Vector2i> mCrossroadPositions{};
 };
 

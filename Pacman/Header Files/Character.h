@@ -12,6 +12,7 @@ public:
     void Draw(sf::RenderTarget* target) override;
 
     bool GetOnCellChanged() const { return mOnCellChanged; }
+    Direction GetCurrentDirection() const { return mCurrentDirection; }
 
 protected:
     virtual void Move(const float deltaTime) = 0;

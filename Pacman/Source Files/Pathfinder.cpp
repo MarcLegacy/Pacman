@@ -1,6 +1,7 @@
 #include "Pathfinder.h"
 
 #include <iostream>
+#include <queue>
 #include <unordered_map>
 
 #include "DrawDebug.h"
@@ -73,6 +74,8 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition
     {
         // Trace the cells from the target back to the start. Which gives the path backwards, so we reverse it.
 
+        path.push_back(targetGridPosition);
+
         while (currentGridPosition != startGridPosition)
         {
             currentGridPosition = cameFromMap[currentGridPosition];
@@ -96,6 +99,50 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2f startWorldPositio
     return AStar(grid->GetCellGridPosition(startWorldPosition), grid->GetCellGridPosition(targetWorldPosition), weighted);
 }
 
+std::vector<sf::Vector2i> Pathfinder::BreadthFirstSearchCrossroadCells(const sf::Vector2i startGridPosition,
+    const std::vector<sf::Vector2i>& crossroadPositions) const
+{
+    const auto& grid{ Pacman::GetGrid() };
+    std::queue<sf::Vector2i> gridPositionsQueue{};
+    std::unordered_map<sf::Vector2i, sf::Vector2i, Vector2iHasher> cameFromMap{};
+    std::vector<sf::Vector2i> closestCrossroadGridPositions{};
+
+    gridPositionsQueue.push(startGridPosition);
+
+    while (!gridPositionsQueue.empty())
+    {
+        const sf::Vector2i currentGridPosition = gridPositionsQueue.front();
+        gridPositionsQueue.pop();
+
+        for (const auto& traversableGridCells : grid->GetTraversableCells(currentGridPosition))
+        {
+            const sf::Vector2i traversableGridPosition = grid->GetCellGridPosition(traversableGridCells->GetPosition());
+            if (traversableGridPosition != startGridPosition && std::find(crossroadPositions.begin(), crossroadPositions.end(), traversableGridPosition) != crossroadPositions.end())
+            {
+                if (std::find(closestCrossroadGridPositions.begin(), closestCrossroadGridPositions.end(), traversableGridPosition) == closestCrossroadGridPositions.end())
+                {
+                    closestCrossroadGridPositions.push_back(traversableGridPosition);
+                }
+
+                continue;
+            }
+
+            if (cameFromMap.find(traversableGridPosition) == cameFromMap.end())
+            {
+                gridPositionsQueue.push(traversableGridPosition);
+                cameFromMap[traversableGridPosition] = currentGridPosition;
+            }
+        }
+    }
+
+    //for (const auto& cameFromGridPosition : cameFromMap)
+    //{
+    //    Pacman::GetDrawDebug()->DrawArrowPersistant(grid->GetCellCenterPosition(cameFromGridPosition.first), Utility::ConvertGridDirectionToDirection(cameFromGridPosition.second - cameFromGridPosition.first), 24.0f, sf::Color::Red);
+    //}
+
+    return{ closestCrossroadGridPositions };
+}
+
 void Pathfinder::SetCellCosts(const std::vector<sf::Vector2i>& paths)
 {
     for (auto& cellCost : mCellCostMap)
@@ -106,7 +153,7 @@ void Pathfinder::SetCellCosts(const std::vector<sf::Vector2i>& paths)
         {
             if (cellCost.first == cell)
             {
-                cellCost.second = cellCost.second + 20;
+                cellCost.second = cellCost.second + EXTRA_WEIGHT;
             }
         }
     }

@@ -3,14 +3,8 @@
 #include <vector>
 #include <SFML/System/Vector2.hpp>
 
-struct Vector2iHasher
-{
-    std::size_t operator()(const sf::Vector2i& key) const
-    {
-        // hashes the integers individually and then combines them.
-        return std::hash<int>()(key.x) * std::hash<int>()(key.y);   // If something goes wrong, use the caret ('^') as operator.
-    }
-};
+#include "Utility.h"
+
 
 class Pathfinder
 {
@@ -24,10 +18,15 @@ public:
     // Returns the shortest path, weighted means if the cells count other paths as weight.
     std::vector<sf::Vector2i> AStar(const sf::Vector2f startWorldPosition, const sf::Vector2f targetWorldPosition, const bool weighted = false) const;
 
+    // Performs a Breadth-First search and returns the first crossroad cells that are connected to the start grid position
+    std::vector<sf::Vector2i> BreadthFirstSearchCrossroadCells(const sf::Vector2i startGridPosition, const std::vector<sf::Vector2i>& crossroadPositions) const;
+
     void SetCellCosts(const std::vector<sf::Vector2i>& paths);
 
 private:
     void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const;
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
+
+    const int EXTRA_WEIGHT{ 20 };
 };
 

@@ -137,6 +137,7 @@
     <ClCompile Include="Source Files\Character.cpp" />
     <ClCompile Include="Source Files\DrawDebug.cpp" />
     <ClCompile Include="Source Files\Enemy.cpp" />
+    <ClCompile Include="Source Files\EnemyManager.cpp" />
     <ClCompile Include="Source Files\Grid.cpp" />
     <ClCompile Include="Source Files\main.cpp" />
     <ClCompile Include="Source Files\Object.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Header Files\Character.h" />
     <ClInclude Include="Header Files\DrawDebug.h" />
     <ClInclude Include="Header Files\Enemy.h" />
+    <ClInclude Include="Header Files\EnemyManager.h" />
     <ClInclude Include="Header Files\GlobalEnums.h" />
     <ClInclude Include="Header Files\Grid.h" />
     <ClInclude Include="Header Files\Object.h" />

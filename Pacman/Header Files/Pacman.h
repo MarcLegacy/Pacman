@@ -3,9 +3,11 @@
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/System/Clock.hpp>
 
 #include "Pathfinder.h"
 
+class EnemyManager;
 class Pathfinder;
 class Enemy;
 class Object;
@@ -40,6 +42,7 @@ public:
     static std::shared_ptr<Grid> GetGrid() { return mGrid; }
     static std::shared_ptr<DrawDebug> GetDrawDebug() { return mDrawDebug; }
     static std::shared_ptr<Pathfinder> GetPathfinder() { return mPathfinder; }
+    static std::shared_ptr<EnemyManager> GetEnemyManager() { return mEnemyManager; }
 
     static constexpr float CELL_SIZE{ 32.0f };  // constexpr specifies that the value of an object or a function can be evaluated at compile-time and the expression can be used in other constant expressions. Need this to make set in other classes.
 
@@ -49,7 +52,6 @@ private:
     void FPSTimer(const float deltaTime);
     void DrawTraversableMapPersistant() const;
     void InitializeObjects();
-    std::vector<sf::Vector2i> CollectCalculatedPaths() const;
     void CheckCharacterContact();
     void ShowGameText();
     void ReadLayoutFromFile();
@@ -66,9 +68,10 @@ private:
 
     // Objects
     std::vector<std::shared_ptr<Object>> mObjects{};
+    std::shared_ptr<Player> mPlayer{};
+
     static std::shared_ptr<Grid> mGrid;
     static std::shared_ptr<DrawDebug> mDrawDebug;
     static std::shared_ptr<Pathfinder> mPathfinder;
-    std::shared_ptr<Player> mPlayer{};
-    std::vector<std::shared_ptr<Enemy>> mEnemies{};
+    static std::shared_ptr<EnemyManager> mEnemyManager;
 };

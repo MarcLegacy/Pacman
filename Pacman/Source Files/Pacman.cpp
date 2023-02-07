@@ -10,6 +10,7 @@
 
 #include "DrawDebug.h"
 #include "Enemy.h"
+#include "EnemyManager.h"
 #include "Grid.h"
 #include "Object.h"
 #include "Pathfinder.h"
@@ -19,6 +20,7 @@
 std::shared_ptr<Grid> Pacman::mGrid{};
 std::shared_ptr<DrawDebug> Pacman::mDrawDebug{};
 std::shared_ptr<Pathfinder> Pacman::mPathfinder{};
+std::shared_ptr<EnemyManager> Pacman::mEnemyManager{};
 
 Pacman::Pacman()
 {
@@ -67,6 +69,11 @@ Pacman::~Pacman()
     {
         mPathfinder = nullptr;
     }
+
+    if (mEnemyManager != nullptr)
+    {
+        mEnemyManager = nullptr;
+    }
 }
 
 
@@ -95,54 +102,6 @@ void Pacman::Update(const float deltaTime)
     }
 
     CheckCharacterContact();
-
-    if (mPlayer->GetOnCellChanged())
-    {
-        std::vector<unsigned int> orderRank;
-        for (const auto& enemy : mEnemies)
-        {
-            int rank{};
-            for (const auto& enemyToCheck : mEnemies)
-            {
-                if (enemy == enemyToCheck) continue;
-
-                if (enemy->GetPath().size() > enemyToCheck->GetPath().size())
-                {
-                    rank++;
-                }
-            }
-            orderRank.push_back(rank);
-        }
-
-        for (const auto& enemy : mEnemies)
-        {
-            enemy->ClearPath();
-        }
-
-        int totalIndex{};
-
-        for (unsigned int i = 0; i < orderRank.size(); ++i)
-        {
-            unsigned int index = orderRank[i];
-            totalIndex += index;
-
-            mEnemies[index]->FindPath(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()));
-
-            const int distance = Utility::ManhattanDistance(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[index]->GetCenterPosition()));
-            if (distance < 10)
-            {
-                //std::cout << "Operation: 'Surround Mouse' activated!" << std::endl;
-                mPathfinder->SetCellCosts(CollectCalculatedPaths());
-                mEnemies[index]->mIsDoingTactic = true;
-            }
-            else if (distance > 15)
-            {
-                mEnemies[index]->mIsDoingTactic = false;
-            }
-        }
-
-        //std::cout << totalIndex << std::endl;
-    }
 }
 
 void Pacman::Draw()
@@ -225,31 +184,13 @@ void Pacman::InitializeObjects()
     mObjects.push_back(mDrawDebug);
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
-    const auto enemyBlue = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(0), SkinColor::Blue);
-    mEnemies.push_back(enemyBlue);
-    const auto enemyRed = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(1), SkinColor::Red);
-    mEnemies.push_back(enemyRed);
-    const auto enemyOrange = std::make_shared<Enemy>(mGrid->GetEnemySpawnPosition(2), SkinColor::Orange);
-    mEnemies.push_back(enemyOrange);
-    mObjects.insert(mObjects.end(), mEnemies.begin(), mEnemies.end());
-
-}
-
-std::vector<sf::Vector2i> Pacman::CollectCalculatedPaths() const
-{
-    std::vector<sf::Vector2i> paths;
-
-    for (const auto& enemy : mEnemies)
-    {
-        paths.insert(paths.end(), enemy->GetPath().begin(), enemy->GetPath().end());
-    }
-
-    return paths;
+    mEnemyManager = std::make_shared<EnemyManager>(mPlayer);
+    mObjects.push_back(mEnemyManager);
 }
 
 void Pacman::CheckCharacterContact()
 {
-    for (const auto& enemy : mEnemies)
+    for (const auto& enemy : mEnemyManager->GetEnemies())
     {
         if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
         {
@@ -282,6 +223,7 @@ void Pacman::ShowGameText()
     }
 
     mWindow->draw(text);
+
 }
 
 void Pacman::ReadLayoutFromFile()

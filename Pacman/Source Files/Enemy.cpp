@@ -62,19 +62,19 @@ void Enemy::Draw(sf::RenderTarget* target)
 {
     Character::Draw(target);
 
-    for (const auto& pathArrow : DrawDebug::DrawPathArrows(mPath, 24.0f, mPathColor))
-    {
-        //target->draw(&pathArrow[0], pathArrow.size(), sf::LineStrip);
-    }
+    ShowDebugPathArrows(target, true);
+    ShowTargetGridPosition(target, true);
 }
 
-void Enemy::FindPath(const sf::Vector2i targetGridPosition)
+void Enemy::FindPath(const sf::Vector2i targetGridPosition, const bool withWeight)
 {
     //if (std::find(mPath.begin(), mPath.end(), targetGridPosition) != mPath.end()) return;
 
     //mPath.clear();
 
-    mPath = Pacman::GetPathfinder()->AStar(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()), targetGridPosition, mIsDoingTactic);
+    mTargetGridPosition = targetGridPosition;
+
+    mPath = Pacman::GetPathfinder()->AStar(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()), targetGridPosition, withWeight);
     mCurrentPathIndex = 0;
 }
 
@@ -91,10 +91,35 @@ void Enemy::FollowPath()
     }
 
     // TODO: Make sure the pathing is done when they are on the cell they're currently traveling to.
-    if (mPath.size() > 2 && mPath[1] == grid->GetCellGridPosition(GetCenterPosition()) && mCurrentPathIndex == 0)   // Bandage fix to battle them moving back because they repathed too soon.
+    if (mPath.size() > 1 && mPath[1] == grid->GetCellGridPosition(GetCenterPosition()) && mCurrentPathIndex == 0)   // Bandage fix to battle them moving back because they repathed too soon.
     {
-        mCurrentPathIndex = 2;
+        mCurrentPathIndex = 1;
     }
 
+
     mDesiredDirection = Utility::ConvertGridDirectionToDirection(mPath[mCurrentPathIndex++] - grid->GetCellGridPosition(GetCenterPosition()));
+
+    if (mCurrentPathIndex == mPath.size())
+    {
+        mPath.clear();
+    }
 }
+
+void Enemy::ShowDebugPathArrows(sf::RenderTarget* target, const bool show) const
+{
+    if (!show) return;
+
+    for (const auto& pathArrow : DrawDebug::DrawPathArrows(mPath, 24.0f, mPathColor))
+    {
+        target->draw(&pathArrow[0], pathArrow.size(), sf::LineStrip);
+    }
+}
+
+void Enemy::ShowTargetGridPosition(sf::RenderTarget* target, const bool show) const
+{
+    if (!show) return;
+
+    target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(mTargetGridPosition), Pacman::CELL_SIZE, mPathColor));
+}
+
+

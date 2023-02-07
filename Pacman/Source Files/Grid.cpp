@@ -10,6 +10,7 @@ Grid::Grid(const int width, const int height, const float cellSize, const std::v
 {
     SetupGridFromFile(levelLayout);
     SetupTraversableCellMap();
+    SetupCrossroadPositions();
 }
 
 void Grid::Update(float deltaTime)
@@ -299,6 +300,24 @@ void Grid::SetupTraversableCellMap()
             {
                 auto& vector = mTraversableCellMap[teleportFromCell.second];
                 vector.push_back(teleportToCell.second);
+            }
+        }
+    }
+}
+
+void Grid::SetupCrossroadPositions()
+{
+    for (const auto& row : mGridCells)
+    {
+        for (const auto& cell : row)
+        {
+            if (cell->GetCellType() == CellType::Wall) continue;    // Can avoid walls.
+
+            std::vector<std::shared_ptr<Cell>> traversableCells{};
+
+            if (GetTraversableCells(cell->GetPosition()).size() > 2)    // Every cell with more than 2 traversable cells is a crossroad.
+            {
+                mCrossroadPositions.push_back(GetCellGridPosition(cell->GetPosition()));
             }
         }
     }
