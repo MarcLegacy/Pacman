@@ -7,7 +7,6 @@
 #include "Enemy.h"
 #include "Grid.h"
 #include "Pacman.h"
-#include "Utility.h"
 
 EnemyManager::EnemyManager(std::shared_ptr<Player> target)
     : mTarget(std::move(target))
@@ -23,7 +22,6 @@ EnemyManager::EnemyManager(std::shared_ptr<Player> target)
 
     for (const auto& gridPosition : grid->GetCrossroadPositions())
     {
-        //Pacman::GetDrawDebug()->DrawCellPersistant(grid->GetCellWorldPosition(gridPosition), 32.0f, sf::Color::Red);
         mTargetDistanceToCrossroadMap[gridPosition] = 0;
     }
 }
@@ -39,26 +37,16 @@ void EnemyManager::Update(float deltaTime)
 
     if (mTarget->GetOnCellChanged())
     {
-        //OldTactic();
         UpdateTargetDistanceToCrossroadMap();
-        NewTactic();
+        SurroundTactic();
     }
 
+    // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
     for (const auto& enemy : mEnemies)
     {
         if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
         {
-            //const auto& traversableCells = grid->GetTraversableCells(mTarget->GetCenterPosition());
-            //const auto& newTargetGridDirection = grid->GetCellGridPosition(mTarget->GetCenterPosition()) + Utility::ConvertDirectionToGridDirection(mTarget->GetCurrentDirection());
-            //if (std::find(traversableCells.begin(), traversableCells.end(), grid->GetCell(newTargetGridDirection)) != traversableCells.end())
-            //{
-            //    enemy->FindPath(newTargetGridDirection, true);
-            //}
-            //else
-            {
-                enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
-            }
-
+            enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
         }
     }
 }
@@ -70,80 +58,26 @@ void EnemyManager::Draw(sf::RenderTarget* target)
         enemy->Draw(target);
     }
 
-    //for (const auto& crossroadDistance : mTargetDistanceToCrossroadMap)
-    //{
-    //    target->draw(Pacman::GetDrawDebug()->DrawCellCost(crossroadDistance.second, crossroadDistance.first));
-    //}
-
-    //for (const auto& gridPosition : Pacman::GetPathfinder()->BreadthFirstSearchCrossroadCells(Pacman::GetGrid()->GetCellGridPosition(mTarget->GetCenterPosition()), Pacman::GetGrid()->GetCrossroadPositions()))
-    //{
-    //    target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(gridPosition), 32.0f, sf::Color::Green));
-    //}
+    ShowCrossroadDistanceToTargetCost(target, false);
+    ShowClosestCrossroadsToTarget(target, false);
+    ShowCrossroads(target, false);
 }
 
-void EnemyManager::OldTactic() const
-{
-    const auto& grid = Pacman::GetGrid();
-
-    std::vector<unsigned int> orderRank;
-    for (const auto& enemy : mEnemies)
-    {
-        int rank{};
-        for (const auto& enemyToCheck : mEnemies)
-        {
-            if (enemy == enemyToCheck) continue;
-
-            if (enemy->GetPath().size() > enemyToCheck->GetPath().size())
-            {
-                rank++;
-            }
-        }
-        orderRank.push_back(rank);
-    }
-
-    for (const auto& enemy : mEnemies)
-    {
-        enemy->ClearPath();
-    }
-
-    int totalIndex{};
-
-    for (unsigned int i = 0; i < orderRank.size(); ++i)
-    {
-        unsigned int index = orderRank[i];
-        totalIndex += index;
-
-        mEnemies[index]->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()));
-
-        const int distance = Utility::ManhattanDistance(grid->GetCellGridPosition(mTarget->GetCenterPosition()), grid->GetCellGridPosition(mEnemies[index]->GetCenterPosition()));
-        if (distance < 30)
-        {
-            //std::cout << "Operation: 'Surround Mouse' activated!" << std::endl;
-            Pacman::GetPathfinder()->SetCellCosts(CollectCalculatedPaths());
-            mEnemies[index]->mIsDoingTactic = true;
-        }
-        //else if (distance > 15)
-        //{
-        //    mEnemies[index]->mIsDoingTactic = false;
-        //}
-    }
-
-    //std::cout << totalIndex << std::endl;
-}
-
-void EnemyManager::NewTactic()
+void EnemyManager::SurroundTactic()
 {
     const auto& pathfinder = Pacman::GetPathfinder();
     const auto& grid = Pacman::GetGrid();
 
+    // This makes sure that we don't try to repath when on a crossroad, as we will get an new target position to go to once the player's left the crossroad immediatelly after.
     if (std::find(grid->GetCrossroadPositions().begin(), grid->GetCrossroadPositions().end(), grid->GetCellGridPosition(mTarget->GetCenterPosition())) != grid->GetCrossroadPositions().end())
     {
         return;
     }
 
-    // Decide which enemy goes to which crossroad.
+
     auto closestCrossroadGridPositions = pathfinder->BreadthFirstSearchCrossroadCells(grid->GetCellGridPosition(mTarget->GetCenterPosition()), grid->GetCrossroadPositions());
 
+    // First check if we need to find a new crossroad to path to
     if (!AreCrossroadsEqual(closestCrossroadGridPositions, mCurrentClosestCrossroadGridPositions))
     {
         mCurrentClosestCrossroadGridPositions = closestCrossroadGridPositions;
@@ -249,6 +183,7 @@ void EnemyManager::SetEnemyTargetPosition(const unsigned int enemyIndex, std::ve
         closestGridPosition = grid->GetCellGridPosition(mTarget->GetCenterPosition());
     }
 
+    // Sets the cell cost to make sure enemies try to avoid taking the same path.
     Pacman::GetPathfinder()->SetCellCosts(CollectCalculatedPaths());
 
     mEnemies[enemyIndex]->FindPath(closestGridPosition, true);
@@ -284,4 +219,36 @@ bool EnemyManager::AreCrossroadsEqual(const std::vector<sf::Vector2i>& crossRoad
     }
 
     return false;
+}
+
+void EnemyManager::ShowCrossroads(sf::RenderTarget* target, const bool show) const
+{
+    if (!show) return;
+
+    const auto& grid = Pacman::GetGrid();
+
+    for (const auto& gridPosition : grid->GetCrossroadPositions())
+    {
+        target->draw(Pacman::GetDrawDebug()->DrawCell(grid->GetCellWorldPosition(gridPosition), 32.0f, sf::Color::Red));
+    }
+}
+
+void EnemyManager::ShowCrossroadDistanceToTargetCost(sf::RenderTarget* target, const bool show) const
+{
+    if (!show) return;
+
+    for (const auto& crossroadDistance : mTargetDistanceToCrossroadMap)
+    {
+        target->draw(Pacman::GetDrawDebug()->DrawCellCost(crossroadDistance.second, crossroadDistance.first));
+    }
+}
+
+void EnemyManager::ShowClosestCrossroadsToTarget(sf::RenderTarget* target, const bool show) const
+{
+    if (!show) return;
+
+    for (const auto& gridPosition : Pacman::GetPathfinder()->BreadthFirstSearchCrossroadCells(Pacman::GetGrid()->GetCellGridPosition(mTarget->GetCenterPosition()), Pacman::GetGrid()->GetCrossroadPositions()))
+    {
+        target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(gridPosition), 32.0f, sf::Color::Green));
+    }
 }

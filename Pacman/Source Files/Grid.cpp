@@ -1,7 +1,6 @@
 #include "Grid.h"
 
 #include <array>
-#include <fstream>
 #include <iostream>
 #include <memory>
 
@@ -13,17 +12,7 @@ Grid::Grid(const int width, const int height, const float cellSize, const std::v
     SetupCrossroadPositions();
 }
 
-void Grid::Update(float deltaTime)
-{
-    // Should Cells need to be updated.
-    //for (const auto& row : mGridCells)
-    //{
-    //    for (const auto& cell : row)
-    //    {
-    //        cell->Update(deltaTime);
-    //    }
-    //}
-}
+void Grid::Update(float deltaTime) {}
 
 void Grid::Draw(sf::RenderTarget* target)
 {
@@ -133,103 +122,8 @@ sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
     return sf::Vector2f{};
 }
 
-//void Grid::SetupLevelLayout()
-//{
-//    // 0 = Empty
-//    // 1 = Wall
-//    // 2 = Player Spawn
-//    // 3 = Enemy Spawn
-//    // 4 = Teleport
-//    // 5 = Power Pill
-//    mLevelLayout =
-//    { {
-//    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-//    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 3, 0, 0, 0, 3, 3, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1},
-//    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1},
-//    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-//    {1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1},
-//    {1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1},
-//    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-//    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-//    } };
-//}
-
-void Grid::SetupGrid()
-{
-    for (int row = 0; row < mWidth; row++)
-    {
-        std::vector<std::shared_ptr<Cell>> cellRow{};
-
-        for (int column = 0; column < mHeight; column++)
-        {
-            // Calculates position and retrieves the cell type to create a cell.
-            sf::Vector2f position{ GetCellWorldPosition(row, column) };//static_cast<float>(row)* mCellSize, static_cast<float>(column)* mCellSize
-        
-            CellType type = GetNumberFromLevelLayout(sf::Vector2i(row, column)) == 1 ? CellType::Wall : CellType::Empty;
-            bool isTeleportCell{ false };
-
-            switch (GetNumberFromLevelLayout(row, column))
-            {
-            case 0: 
-                type = CellType::Empty;
-                break;
-            case 1:
-                type = CellType::Wall;
-                break;
-            case 2:
-                type = CellType::Empty;
-                mPlayerSpawnPosition = position;
-                break;
-            case 3:
-                type = CellType::Empty;
-                mEnemySpawnPositions.push_back(position);
-                break;
-            case 4:
-                type = CellType::Empty;
-                isTeleportCell = true;
-                break;
-            default:
-                std::cout << "Number from level layout not yet set!" << std::endl;
-            }
-            auto cell = std::make_shared<Cell>(position, type);
-            if (isTeleportCell)
-            {
-                mTeleportCellMap.insert(mTeleportCellMap.begin(), std::pair<int, std::shared_ptr<Cell>>(1, cell));    // 0 should eventually be the number of the teleport cell.
-            }
-            cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
-        }
-
-        mGridCells.push_back(std::move(cellRow));
-    }
-
-}
-
 void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
 {
-
     for (unsigned int column = 0; column < levelLayout.size(); ++column)
     {
         const std::string& layoutString = levelLayout[column];
@@ -239,7 +133,7 @@ void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
         {
             const auto& character = layoutString[row];
             // Calculates position and retrieves the cell type to create a cell.
-            sf::Vector2f position{ GetCellWorldPosition(row, column) };//static_cast<float>(row)* mCellSize, static_cast<float>(column)* mCellSize
+            sf::Vector2f position{ GetCellWorldPosition(row, column) };
 
             CellType type = character == '*' ? CellType::Wall : CellType::Empty;
             bool isTeleportCell{ false };
@@ -255,9 +149,10 @@ void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
             case '1':
                 isTeleportCell = true;
                 break;
-            //default:
-                //break;
+            default:
+                break;
             }
+
             auto cell = std::make_shared<Cell>(position, type);
             if (isTeleportCell)
             {
@@ -292,6 +187,7 @@ void Grid::SetupTraversableCellMap()
         }
     }
 
+    // Also making sure that any teleport cell is connected.
     for (const auto& teleportFromCell : mTeleportCellMap)
     {
         for (const auto& teleportToCell : mTeleportCellMap)

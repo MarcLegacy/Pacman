@@ -1,6 +1,5 @@
 #include "Character.h"
 
-#include <iostream>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "DrawDebug.h"
@@ -10,9 +9,7 @@
 
 
 Character::Character(const sf::Vector2f position, const float speed)
-    : Object(position), mSpeed(speed), mDestinationWorldPosition(mPosition)
-{
-}
+    : Object(position), mSpeed(speed), mDestinationWorldPosition(mPosition) {}
 
 void Character::Update(const float deltaTime)
 {
@@ -30,7 +27,7 @@ void Character::Draw(sf::RenderTarget* target)
 {
     Object::Draw(target);
 
-    //target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
+    ShowCurrentGridPosition(target, false);
 }
 
 bool Character::MoveToDirection(const Direction& direction)
@@ -127,4 +124,11 @@ void Character::CheckIfOnTeleport()
             mPosition = grid->GetCellWorldPosition(mCurrentGridPosition);   // This makes sure we stay in the middle of the cell
         }
     }
+}
+
+void Character::ShowCurrentGridPosition(sf::RenderTarget* target, const bool show) const
+{
+    if (!show) return;
+
+    target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
 }

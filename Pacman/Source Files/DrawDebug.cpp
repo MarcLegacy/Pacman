@@ -1,7 +1,6 @@
 #include "DrawDebug.h"
 
 #include <array>
-#include <iostream>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -15,9 +14,7 @@ DrawDebug::DrawDebug()
     mFont.loadFromFile("Resource Files/Font.ttf");
 }
 
-void DrawDebug::Update(float deltaTime)
-{
-}
+void DrawDebug::Update(float deltaTime) {}
 
 void DrawDebug::Draw(sf::RenderTarget* target)
 {
@@ -88,11 +85,13 @@ std::array<sf::Vertex, 5> DrawDebug::DrawArrow(const sf::Vector2f position, cons
         break;
     }
 
+    // Points are calculated in a 45 degrees square.
     const auto startPosition = sf::Vector2f(position.x - floatDirection.x * size * 0.5f, position.y - floatDirection.y * size * 0.5f);
     const auto endPosition = sf::Vector2f(position.x + floatDirection.x * size * 0.5f, position.y + floatDirection.y * size * 0.5f);
     const auto leftPosition = sf::Vector2f(position.x - floatDirection.y * size * 0.5f, position.y - floatDirection.x * size * 0.5f);
     const auto rightPosition = sf::Vector2f(position.x + floatDirection.y * size * 0.5f, position.y + floatDirection.x * size * 0.5f);
 
+    // The vertices are then set in order so that the lines that are drawn form an arrow.
     const std::array<sf::Vertex, 5> arrow =
     {
         sf::Vertex{startPosition, color},
@@ -130,8 +129,7 @@ void DrawDebug::DrawPathArrowsPersistant(const std::vector<sf::Vector2f>& positi
     }
 }
 
-std::vector<std::array<sf::Vertex, 5>> DrawDebug::DrawPathArrows(const std::vector<sf::Vector2i>& positions,
-                                                                 const float size, const sf::Color& color)
+std::vector<std::array<sf::Vertex, 5>> DrawDebug::DrawPathArrows(const std::vector<sf::Vector2i>& positions, const float size, const sf::Color& color)
 {
     const auto& grid = Pacman::GetGrid();
     std::vector<std::array<sf::Vertex, 5>> pathArrows;

@@ -1,7 +1,5 @@
 #include "Utility.h"
 
-#include <iostream>
-
 #include "GlobalEnums.h"
 
 Direction Utility::ConvertGridDirectionToDirection(const sf::Vector2i gridDirection)

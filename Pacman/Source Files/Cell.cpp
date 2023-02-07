@@ -1,9 +1,7 @@
 #include "Cell.h"
 
 
-Cell::Cell(const sf::Vector2f position) : Object(position)
-{
-}
+Cell::Cell(const sf::Vector2f position) : Object(position) {}
 
 Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(position), mCellType(cellType)
 {
@@ -16,10 +14,7 @@ Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(positi
     }
 }
 
-void Cell::Update(float deltaTime)
-{
-
-}
+void Cell::Update(float deltaTime) {}
 
 void Cell::SetCellType(CellType cellType)
 {

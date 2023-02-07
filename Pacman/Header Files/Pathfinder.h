@@ -11,6 +11,7 @@ class Pathfinder
 public:
     Pathfinder();
     ~Pathfinder() = default;
+
     // Returns the shortest path, weighted means if the cells count other paths as weight.
     std::vector<sf::Vector2i> AStar(const int startX, const int startY, const int targetX, const int targetY, const bool weighted = false) const { return AStar(sf::Vector2i{ startX, startY }, sf::Vector2i{ targetX, targetY }, weighted); }
     // Returns the shortest path, weighted means if the cells count other paths as weight.
@@ -21,12 +22,14 @@ public:
     // Performs a Breadth-First search and returns the first crossroad cells that are connected to the start grid position
     std::vector<sf::Vector2i> BreadthFirstSearchCrossroadCells(const sf::Vector2i startGridPosition, const std::vector<sf::Vector2i>& crossroadPositions) const;
 
+    // Sets the costs of the cells that are then used as cost inside the AStar function.
     void SetCellCosts(const std::vector<sf::Vector2i>& paths);
 
 private:
     void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const;
-    std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
 
-    const int EXTRA_WEIGHT{ 20 };
+    const int EXTRA_WEIGHT{ 30 };
+
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
 };
 

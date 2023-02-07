@@ -15,7 +15,6 @@
 #include "Object.h"
 #include "Pathfinder.h"
 #include "Player.h"
-#include "Utility.h"
 
 std::shared_ptr<Grid> Pacman::mGrid{};
 std::shared_ptr<DrawDebug> Pacman::mDrawDebug{};
@@ -26,35 +25,25 @@ Pacman::Pacman()
 {
     ReadLayoutFromFile();
     if (mLevelLayout.empty()) return;
+
     mEvent = std::make_unique<sf::Event>();
     const auto videoMode = sf::VideoMode(mLevelLayout[0].size() * static_cast<int>(CELL_SIZE), mLevelLayout.size() * static_cast<int>(CELL_SIZE));
     mWindow = std::make_unique<sf::RenderWindow>(sf::VideoMode(videoMode), "Pacman", sf::Style::Close);
     mWindow->setFramerateLimit(60);
     mWindow->setPosition({ mWindow->getPosition().x, 0 });
     mCurrentScreenPosition = mWindow->getPosition();
+
     mGridSize = { static_cast<int>(mLevelLayout[0].size()), static_cast<int>(mLevelLayout.size()) };
     mFont.loadFromFile("Resource Files/Font.ttf");
 
     InitializeObjects();
 
     mPathfinder = std::make_shared<Pathfinder>();
-
-    //for (const auto& cellGridPosition: Pathfinder::AStar(mGrid->GetCellGridPosition(mPlayer->GetPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetPosition())))
-    //{
-    //    mDrawDebug->DrawCellCostPersistant(0, cellGridPosition);
-    //}
-
-    //mDrawDebug->DrawPathArrowsPersistant(mPathfinder->AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition())), 24.0f);
-
-    //mPathfinder->AStar(mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()), mGrid->GetCellGridPosition(mEnemies[0]->GetCenterPosition()));
-
-    //mDrawDebug->DrawPathArrowsPersistant(Pathfinder::AStar(sf::Vector2i{ 1, 1 }, sf::Vector2i{ 1, 5 }), 24.0f);
-
-    //mDrawDebug->DrawPathArrowsPersistant(mPathfinder->AStar(1, 14, 20, 14), 24.0f);
 }
 
 Pacman::~Pacman()
 {
+    // This is needed, otherwise the default deconstructor cannot properly remove these objects.
     if (mGrid != nullptr)
     {
         mGrid = nullptr;
@@ -85,7 +74,7 @@ bool Pacman::IsRunning() const
 void Pacman::Update(const float deltaTime)
 {
     PollEvents();
-    FPSTimer(deltaTime);
+    //FPSTimer(deltaTime);
 
     // Makes sure that when the screen is dragged, that the game is paused to avoid creating a big difference in delta time and giving the player time to prepare for the game.
     if (mCurrentScreenPosition != mWindow->getPosition())
@@ -149,11 +138,12 @@ void Pacman::PollEvents()
             break;
         }
     }
-        
+
 }
 
 void Pacman::FPSTimer(const float deltaTime)
 {
+    // TODO: Get the average over time instead of one frame, because this is not accurate.
     if (mFpsTimer < 1.0f)
     {
         mFpsTimer += deltaTime;
@@ -201,6 +191,7 @@ void Pacman::CheckCharacterContact()
 
 void Pacman::ShowGameText()
 {
+    // TODO: Have the positions set dynamically depending on the screen size.
     sf::Text text{};
     text.setFont(mFont);
 
@@ -223,7 +214,6 @@ void Pacman::ShowGameText()
     }
 
     mWindow->draw(text);
-
 }
 
 void Pacman::ReadLayoutFromFile()

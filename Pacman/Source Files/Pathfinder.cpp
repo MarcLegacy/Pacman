@@ -55,6 +55,7 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition
         for (const auto& traversableCell : grid->GetTraversableCells(currentGridPosition))
         {
             const sf::Vector2i traversableCellGridPosition{ grid->GetCellGridPosition(traversableCell->GetPosition()) };
+            // TODO: Since the cell cost is now not even, change it to continue when it's less.
             if (cellTotalCostMap.find(traversableCellGridPosition) == cellTotalCostMap.end()) // avoid cells that are already in the map, this only works when the travel cost is even in cells
             {
                 const int cellCost = weighted ? mCellCostMap.at(traversableCellGridPosition) : 1; // if the function is weighted. then cell cost is based on how many enemies already pathed over the cell.
@@ -73,7 +74,6 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition
     if (targetFound)
     {
         // Trace the cells from the target back to the start. Which gives the path backwards, so we reverse it.
-
         path.push_back(targetGridPosition);
 
         while (currentGridPosition != startGridPosition)
@@ -119,6 +119,7 @@ std::vector<sf::Vector2i> Pathfinder::BreadthFirstSearchCrossroadCells(const sf:
             const sf::Vector2i traversableGridPosition = grid->GetCellGridPosition(traversableGridCells->GetPosition());
             if (traversableGridPosition != startGridPosition && std::find(crossroadPositions.begin(), crossroadPositions.end(), traversableGridPosition) != crossroadPositions.end())
             {
+                // Making sure that the vector doesn't contain duplicates
                 if (std::find(closestCrossroadGridPositions.begin(), closestCrossroadGridPositions.end(), traversableGridPosition) == closestCrossroadGridPositions.end())
                 {
                     closestCrossroadGridPositions.push_back(traversableGridPosition);
@@ -134,11 +135,6 @@ std::vector<sf::Vector2i> Pathfinder::BreadthFirstSearchCrossroadCells(const sf:
             }
         }
     }
-
-    //for (const auto& cameFromGridPosition : cameFromMap)
-    //{
-    //    Pacman::GetDrawDebug()->DrawArrowPersistant(grid->GetCellCenterPosition(cameFromGridPosition.first), Utility::ConvertGridDirectionToDirection(cameFromGridPosition.second - cameFromGridPosition.first), 24.0f, sf::Color::Red);
-    //}
 
     return{ closestCrossroadGridPositions };
 }

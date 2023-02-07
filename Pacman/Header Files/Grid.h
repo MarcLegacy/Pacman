@@ -1,8 +1,6 @@
 #pragma once
 
-#include <array>
 #include <memory>
-#include <set>
 #include <unordered_map>
 #include <vector>
 #include <SFML/System/Vector2.hpp>
@@ -68,26 +66,24 @@ public:
 
 private:
     void SetupGridFromFile(const std::vector<std::string>& levelLayout);
-    void SetupGrid();
     void SetupTraversableCellMap();
     void SetupCrossroadPositions();
 
-    int GetNumberFromLevelLayout(const int x, const int y) const { return IsCellValid(x, y) ? mLevelLayout[y].at(x) : 0; };
-    int GetNumberFromLevelLayout(const sf::Vector2i gridPosition) const { return GetNumberFromLevelLayout(gridPosition.x, gridPosition.y); };
-
     sf::Vector2f GetCellCenter() const { return sf::Vector2f(mCellSize, mCellSize) * 0.5f; }
+
     bool IsCellValid(const int x, const int y) const;
     bool IsCellValid(const sf::Vector2i gridPosition) const { return IsCellValid(gridPosition.x, gridPosition.y); }
 
     int mWidth{};
     int mHeight{};
     float mCellSize{};
+
     sf::Vector2f mOriginPosition{};
-    std::vector<std::vector<std::shared_ptr<Cell>>> mGridCells{};
-    std::array<std::array<int, 28>, 31> mLevelLayout{};
-    std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> mTraversableCellMap{};
     sf::Vector2f mPlayerSpawnPosition{};
     std::vector<sf::Vector2f> mEnemySpawnPositions{};
+
+    std::vector<std::vector<std::shared_ptr<Cell>>> mGridCells{};
+    std::unordered_map<std::shared_ptr<Cell>, std::vector<std::shared_ptr<Cell>>> mTraversableCellMap{};
     std::unordered_multimap<int, std::shared_ptr<Cell>> mTeleportCellMap{};
     std::vector<sf::Vector2i> mCrossroadPositions{};
 };

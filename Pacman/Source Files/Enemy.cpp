@@ -40,8 +40,6 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed
     {
         mSprite.setTexture(mTexture);
     }
-
-    srand(static_cast<unsigned int>(time(0)));
 }
 
 void Enemy::Move(const float deltaTime)
@@ -62,16 +60,12 @@ void Enemy::Draw(sf::RenderTarget* target)
 {
     Character::Draw(target);
 
-    ShowDebugPathArrows(target, true);
-    ShowTargetGridPosition(target, true);
+    ShowDebugPathArrows(target, false);
+    ShowTargetGridPosition(target, false);
 }
 
 void Enemy::FindPath(const sf::Vector2i targetGridPosition, const bool withWeight)
 {
-    //if (std::find(mPath.begin(), mPath.end(), targetGridPosition) != mPath.end()) return;
-
-    //mPath.clear();
-
     mTargetGridPosition = targetGridPosition;
 
     mPath = Pacman::GetPathfinder()->AStar(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()), targetGridPosition, withWeight);
@@ -95,7 +89,6 @@ void Enemy::FollowPath()
     {
         mCurrentPathIndex = 1;
     }
-
 
     mDesiredDirection = Utility::ConvertGridDirectionToDirection(mPath[mCurrentPathIndex++] - grid->GetCellGridPosition(GetCenterPosition()));
 

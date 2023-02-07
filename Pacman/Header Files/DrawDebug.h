@@ -39,9 +39,9 @@ public:
     sf::Text DrawText(const std::string& text, const sf::Vector2f position, const sf::Color& color = sf::Color::White) const;
     void DrawTextPersistant(const std::string& text, const sf::Vector2f position, const sf::Color& color = sf::Color::White) { mDrawTexts.push_back(DrawText(text, position, color)); }
 
-    // Won't space well will negative numbers
+    // Draw's the passed cost in a cell. Won't space well will negative numbers
     sf::Text DrawCellCost(const int cost, const sf::Vector2i gridPosition, const sf::Color& color = sf::Color::White) const;
-    // Won't space well will negative numbers
+    // Draw's the passed cost in a cell. Won't space well will negative numbers
     void DrawCellCostPersistant(const int cost, const sf::Vector2i gridPosition, const sf::Color& color = sf::Color::White) { mDrawTexts.push_back(DrawCellCost(cost, gridPosition, color)); }
 
 private:

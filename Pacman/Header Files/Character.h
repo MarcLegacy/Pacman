@@ -11,13 +11,21 @@ public:
     void Update(const float deltaTime) override;
     void Draw(sf::RenderTarget* target) override;
 
+    // Replacement for an event when the character's current grid position changed.
     bool GetOnCellChanged() const { return mOnCellChanged; }
+
     Direction GetCurrentDirection() const { return mCurrentDirection; }
 
 protected:
     virtual void Move(const float deltaTime) = 0;
+
+    // Check if the passed direction is valid and makes sure the variables for moving towards that direction are set.
     bool MoveToDirection(const Direction& direction);
+
+    // Returns the direction in grid values
     sf::Vector2f GetMoveDirection(const Direction& direction);
+
+    // Checks if the character current direction and desired direction are the exact opposite/
     bool IsGoingBack() const;
 
     const float CELL_REACHED_RADIUS{ 3.0f };
@@ -29,11 +37,11 @@ protected:
     sf::Vector2i mCurrentGridPosition{};
     bool mOnCellChanged{ false };
 
-    // TODO: Write function that will reset the position of the character when it's position is at a wall, for safety.
-
 private:
     void CheckCellChanged();
     void CheckIfOnWall();
     void CheckIfOnTeleport();
+
+    void ShowCurrentGridPosition(sf::RenderTarget* target, const bool show = true) const;
 };
 

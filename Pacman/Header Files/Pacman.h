@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/Font.hpp>
-#include <SFML/System/Clock.hpp>
 
 #include "Pathfinder.h"
 
@@ -44,7 +43,7 @@ public:
     static std::shared_ptr<Pathfinder> GetPathfinder() { return mPathfinder; }
     static std::shared_ptr<EnemyManager> GetEnemyManager() { return mEnemyManager; }
 
-    static constexpr float CELL_SIZE{ 32.0f };  // constexpr specifies that the value of an object or a function can be evaluated at compile-time and the expression can be used in other constant expressions. Need this to make set in other classes.
+    static constexpr float CELL_SIZE{ 32.0f };  // constexpr specifies that the value of an object or a function can be evaluated at compile-time and the expression can be used in other constant expressions. Need this to set in other classes.
 
 private:
     void Draw();
