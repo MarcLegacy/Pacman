@@ -43,7 +43,7 @@ Pacman::Pacman()
 
 Pacman::~Pacman()
 {
-    // This is needed, otherwise the default deconstructor cannot properly remove these objects.
+    // This is needed, otherwise the default destructor cannot properly remove these objects.
     if (mGrid != nullptr)
     {
         mGrid = nullptr;
@@ -54,10 +54,10 @@ Pacman::~Pacman()
         mDrawDebug = nullptr;
     }
 
-    if (mPathfinder != nullptr)
-    {
-        mPathfinder = nullptr;
-    }
+    //if (mPathfinder != nullptr)
+    //{
+    //    mPathfinder = nullptr;
+    //}
 
     if (mEnemyManager != nullptr)
     {

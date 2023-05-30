@@ -9,6 +9,7 @@ class Object
 public:
     Object() = default;
     Object(const sf::Vector2f position);
+    Object(const sf::Vector2f position, const sf::Texture& texture);
     virtual ~Object() = default;
 
     virtual void Update(float deltaTime) = 0;
