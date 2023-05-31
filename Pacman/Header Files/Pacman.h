@@ -63,9 +63,7 @@ private:
     std::vector<std::string> mLevelLayout{};
     sf::Vector2i mGridSize{};
 
-    // Objects
-    std::vector<std::shared_ptr<Object>> mObjects{};
-    std::shared_ptr<Player> mPlayer{};
+    std::unique_ptr<Player> mPlayer{};
 
     static std::unique_ptr<Grid> mGrid;
     static std::unique_ptr<DrawDebug> mDrawDebug;

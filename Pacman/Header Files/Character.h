@@ -17,6 +17,8 @@ public:
     Direction GetCurrentDirection() const { return mCurrentDirection; }
 
 protected:
+    const float CELL_REACHED_RADIUS{ 3.0f };
+
     virtual void Move(const float deltaTime) = 0;
 
     // Check if the passed direction is valid and makes sure the variables for moving towards that direction are set.
@@ -27,8 +29,6 @@ protected:
 
     // Checks if the character current direction and desired direction are the exact opposite/
     bool IsGoingBack() const;
-
-    const float CELL_REACHED_RADIUS{ 3.0f };
 
     float mSpeed{ 100.0f };
     Direction mCurrentDirection{ Direction::Left }; // The pacman game I played, always made the player start left.

@@ -1,6 +1,5 @@
 #include "Grid.h"
 
-#include <array>
 #include <iostream>
 #include <memory>
 

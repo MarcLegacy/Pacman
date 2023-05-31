@@ -8,17 +8,17 @@
 #include "Grid.h"
 #include "Pacman.h"
 
-EnemyManager::EnemyManager(std::shared_ptr<Player> target)
-    : mTarget(std::move(target))
+EnemyManager::EnemyManager(std::unique_ptr<Player>& target)
+    : mTarget(target)
 {
     const auto& grid = Pacman::GetGrid();
 
-    const auto enemyBlue = std::make_shared<Enemy>(grid->GetEnemySpawnPosition(0), SkinColor::Blue);
-    mEnemies.push_back(enemyBlue);
-    const auto enemyRed = std::make_shared<Enemy>(grid->GetEnemySpawnPosition(1), SkinColor::Red);
-    mEnemies.push_back(enemyRed);
-    const auto enemyOrange = std::make_shared<Enemy>(grid->GetEnemySpawnPosition(2), SkinColor::Orange);
-    mEnemies.push_back(enemyOrange);
+    auto enemyBlue = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(0), SkinColor::Blue);
+    mEnemies.push_back(std::move(enemyBlue));
+    auto enemyRed = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(1), SkinColor::Red);
+    mEnemies.push_back(std::move(enemyRed));
+    auto enemyOrange = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(2), SkinColor::Orange);
+    mEnemies.push_back(std::move(enemyOrange));
 
     for (const auto& gridPosition : grid->GetCrossroadPositions())
     {
@@ -26,28 +26,25 @@ EnemyManager::EnemyManager(std::shared_ptr<Player> target)
     }
 }
 
-void EnemyManager::Update(float deltaTime)
+void EnemyManager::Update(const float deltaTime)
 {
     const auto& grid = Pacman::GetGrid();
 
     for (const auto& enemy : mEnemies)
     {
         enemy->Update(deltaTime);
+
+        // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
+        if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
+        {
+            enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
+        }
     }
 
     if (mTarget->GetOnCellChanged())
     {
         UpdateTargetDistanceToCrossroadMap();
         SurroundTactic();
-    }
-
-    // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
-    for (const auto& enemy : mEnemies)
-    {
-        if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
-        {
-            enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
-        }
     }
 }
 

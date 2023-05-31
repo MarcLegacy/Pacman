@@ -86,11 +86,7 @@ void Pacman::Update(const float deltaTime)
 
     if (mGameState != GameState::Playing) return;
 
-    for (const auto& object : mObjects)
-    {
-        object->Update(deltaTime);
-    }
-
+    mPlayer->Update(deltaTime);
     mEnemyManager->Update(deltaTime);
 
     CheckCharacterContact();
@@ -98,11 +94,7 @@ void Pacman::Update(const float deltaTime)
 
 void Pacman::Draw()
 {
-    for (const auto& object : mObjects)
-    {
-        object->Draw(mWindow.get());
-    }
-
+    mPlayer->Draw(mWindow.get());
     mGrid->Draw(mWindow.get());
     mDrawDebug->Draw(mWindow.get());
     mEnemyManager->Draw(mWindow.get());
@@ -177,8 +169,7 @@ void Pacman::InitializeObjects()
 {
     mGrid = std::make_unique<Grid>(mGridSize.x, mGridSize.y, CELL_SIZE, mLevelLayout);
     mDrawDebug = std::make_unique<DrawDebug>();
-    mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
-    mObjects.push_back(mPlayer);
+    mPlayer = std::make_unique<Player>(mGrid->GetPlayerSpawnPosition());
     mEnemyManager = std::make_unique<EnemyManager>(mPlayer);
 }
 

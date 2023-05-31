@@ -12,7 +12,7 @@ class Enemy;
 class EnemyManager
 {
 public:
-    EnemyManager(std::shared_ptr<Player> target);
+    EnemyManager(std::unique_ptr<Player>& target);
 
     void Update(float deltaTime);
     void Draw(sf::RenderTarget* target);
@@ -20,7 +20,7 @@ public:
     // Makes the enemies move to different crossroads to trap the player.
     void SurroundTactic();
 
-    const std::vector<std::shared_ptr<Enemy>>& GetEnemies() { return mEnemies; }
+    const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return mEnemies; }
 
 private:
     std::vector<sf::Vector2i> CollectCalculatedPaths() const;
@@ -42,8 +42,8 @@ private:
     void ShowCrossroadDistanceToTargetCost(sf::RenderTarget* target, const bool show = true) const;
     void ShowClosestCrossroadsToTarget(sf::RenderTarget* target, const bool show = true) const;
 
-    std::vector<std::shared_ptr<Enemy>> mEnemies{};
-    std::shared_ptr<Player> mTarget{};
+    std::vector<std::unique_ptr<Enemy>> mEnemies{};
+    std::unique_ptr<Player>& mTarget;
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mTargetDistanceToCrossroadMap{};
     std::vector<sf::Vector2i> mCurrentClosestCrossroadGridPositions{};
 };
