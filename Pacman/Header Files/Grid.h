@@ -9,13 +9,12 @@
 
 class Cell;
 
-class Grid : public Object
+class Grid
 {
 public:
     Grid(const int width, const int height, const float cellSize, const std::vector<std::string>& levelLayout, const sf::Vector2f originPosition = {});
 
-    void Update(float deltaTime) override;
-    void Draw(sf::RenderTarget* target) override;
+    void Draw(sf::RenderTarget* target);
 
     int GetGridWidth() const { return mWidth; }
     int GetGridHeight() const { return mHeight; }

@@ -38,12 +38,10 @@ public:
     void Update(const float deltaTime);
     void Render();
 
-    static std::shared_ptr<Grid> GetGrid() { return mGrid; }
-    static std::shared_ptr<DrawDebug> GetDrawDebug() { return mDrawDebug; }
-    static std::shared_ptr<Pathfinder> GetPathfinder() { return mPathfinder; }
-    static std::shared_ptr<EnemyManager> GetEnemyManager() { return mEnemyManager; }
-
-    static constexpr float CELL_SIZE{ 32.0f };  // constexpr specifies that the value of an object or a function can be evaluated at compile-time and the expression can be used in other constant expressions. Need this to set in other classes.
+    static const std::unique_ptr<Grid>& GetGrid() { return mGrid; }
+    static const std::unique_ptr<DrawDebug>& GetDrawDebug() { return mDrawDebug; }
+    static const std::unique_ptr<Pathfinder>& GetPathfinder() { return mPathfinder; }
+    static const std::unique_ptr<EnemyManager>& GetEnemyManager() { return mEnemyManager; }
 
 private:
     void Draw();
@@ -69,8 +67,8 @@ private:
     std::vector<std::shared_ptr<Object>> mObjects{};
     std::shared_ptr<Player> mPlayer{};
 
-    static std::shared_ptr<Grid> mGrid;
-    static std::shared_ptr<DrawDebug> mDrawDebug;
-    static std::shared_ptr<Pathfinder> mPathfinder;
-    static std::shared_ptr<EnemyManager> mEnemyManager;
+    static std::unique_ptr<Grid> mGrid;
+    static std::unique_ptr<DrawDebug> mDrawDebug;
+    static std::unique_ptr<Pathfinder> mPathfinder;
+    static std::unique_ptr<EnemyManager> mEnemyManager;
 };

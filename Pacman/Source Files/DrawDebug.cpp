@@ -7,14 +7,13 @@
 #include <SFML/Graphics/Text.hpp>
 
 #include "Grid.h"
+#include "Pacman.h"
 #include "Utility.h"
 
 DrawDebug::DrawDebug()
 {
     mFont.loadFromFile("Resource Files/Font.ttf");
 }
-
-void DrawDebug::Update(float deltaTime) {}
 
 void DrawDebug::Draw(sf::RenderTarget* target)
 {

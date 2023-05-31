@@ -11,15 +11,16 @@
 #include "DrawDebug.h"
 #include "Enemy.h"
 #include "EnemyManager.h"
+#include "GlobalConstants.h"
 #include "Grid.h"
 #include "Object.h"
 #include "Pathfinder.h"
 #include "Player.h"
 
-std::shared_ptr<Grid> Pacman::mGrid{};
-std::shared_ptr<DrawDebug> Pacman::mDrawDebug{};
-std::shared_ptr<Pathfinder> Pacman::mPathfinder{};
-std::shared_ptr<EnemyManager> Pacman::mEnemyManager{};
+std::unique_ptr<Grid> Pacman::mGrid{};
+std::unique_ptr<DrawDebug> Pacman::mDrawDebug{};
+std::unique_ptr<Pathfinder> Pacman::mPathfinder{};
+std::unique_ptr<EnemyManager> Pacman::mEnemyManager{};
 
 Pacman::Pacman()
 {
@@ -38,7 +39,7 @@ Pacman::Pacman()
 
     InitializeObjects();
 
-    mPathfinder = std::make_shared<Pathfinder>();
+    mPathfinder = std::make_unique<Pathfinder>();
 }
 
 Pacman::~Pacman()
@@ -49,10 +50,10 @@ Pacman::~Pacman()
         mGrid = nullptr;
     }
 
-    if (mDrawDebug != nullptr)
-    {
-        mDrawDebug = nullptr;
-    }
+    //if (mDrawDebug != nullptr)
+    //{
+    //    mDrawDebug = nullptr;
+    //}
 
     //if (mPathfinder != nullptr)
     //{
@@ -90,6 +91,8 @@ void Pacman::Update(const float deltaTime)
         object->Update(deltaTime);
     }
 
+    mEnemyManager->Update(deltaTime);
+
     CheckCharacterContact();
 }
 
@@ -99,6 +102,10 @@ void Pacman::Draw()
     {
         object->Draw(mWindow.get());
     }
+
+    mGrid->Draw(mWindow.get());
+    mDrawDebug->Draw(mWindow.get());
+    mEnemyManager->Draw(mWindow.get());
 
     ShowGameText();
 }
@@ -168,14 +175,11 @@ void Pacman::DrawTraversableMapPersistant() const
 
 void Pacman::InitializeObjects()
 {
-    mGrid = std::make_shared<Grid>(mGridSize.x, mGridSize.y, CELL_SIZE, mLevelLayout);
-    mObjects.push_back(mGrid);
-    mDrawDebug = std::make_shared<DrawDebug>();
-    mObjects.push_back(mDrawDebug);
+    mGrid = std::make_unique<Grid>(mGridSize.x, mGridSize.y, CELL_SIZE, mLevelLayout);
+    mDrawDebug = std::make_unique<DrawDebug>();
     mPlayer = std::make_shared<Player>(mGrid->GetPlayerSpawnPosition());
     mObjects.push_back(mPlayer);
-    mEnemyManager = std::make_shared<EnemyManager>(mPlayer);
-    mObjects.push_back(mEnemyManager);
+    mEnemyManager = std::make_unique<EnemyManager>(mPlayer);
 }
 
 void Pacman::CheckCharacterContact()

@@ -6,6 +6,7 @@
 #include "DrawDebug.h"
 #include "Grid.h"
 #include "Pacman.h"
+
 #include "Pathfinder.h"
 #include "Utility.h"
 
@@ -112,7 +113,7 @@ void Enemy::ShowTargetGridPosition(sf::RenderTarget* target, const bool show) co
 {
     if (!show) return;
 
-    target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(mTargetGridPosition), Pacman::CELL_SIZE, mPathColor));
+    target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(mTargetGridPosition), CELL_SIZE, mPathColor));
 }
 
 

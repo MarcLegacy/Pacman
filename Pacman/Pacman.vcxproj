@@ -152,6 +152,7 @@
     <ClInclude Include="Header Files\DrawDebug.h" />
     <ClInclude Include="Header Files\Enemy.h" />
     <ClInclude Include="Header Files\EnemyManager.h" />
+    <ClInclude Include="Header Files\GlobalConstants.h" />
     <ClInclude Include="Header Files\GlobalEnums.h" />
     <ClInclude Include="Header Files\Grid.h" />
     <ClInclude Include="Header Files\Object.h" />

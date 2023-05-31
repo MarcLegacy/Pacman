@@ -12,8 +12,6 @@ Grid::Grid(const int width, const int height, const float cellSize, const std::v
     SetupCrossroadPositions();
 }
 
-void Grid::Update(float deltaTime) {}
-
 void Grid::Draw(sf::RenderTarget* target)
 {
     for (const auto& row : mGridCells)

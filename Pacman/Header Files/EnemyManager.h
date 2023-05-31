@@ -9,13 +9,13 @@
 class Player;
 class Enemy;
 
-class EnemyManager : public Object
+class EnemyManager
 {
 public:
     EnemyManager(std::shared_ptr<Player> target);
 
-    void Update(float deltaTime) override;
-    void Draw(sf::RenderTarget* target) override;
+    void Update(float deltaTime);
+    void Draw(sf::RenderTarget* target);
 
     // Makes the enemies move to different crossroads to trap the player.
     void SurroundTactic();
