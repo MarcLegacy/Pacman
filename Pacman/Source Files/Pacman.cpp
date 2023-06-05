@@ -158,9 +158,9 @@ void Pacman::DrawTraversableMapPersistant() const
 {
     for (const auto& traversableCells : mGrid->GetTraversableCellMap())
     {
-        for (const auto& cell : traversableCells.second)
+        for (const auto& cellGridPosition : traversableCells.second)
         {
-            mDrawDebug->DrawLinePersistant(mGrid->GetCellCenterPosition(traversableCells.first->GetPosition()), mGrid->GetCellCenterPosition(cell->GetPosition()));
+            mDrawDebug->DrawLinePersistant(mGrid->GetCellCenterPosition(traversableCells.first), mGrid->GetCellCenterPosition(cellGridPosition));
         }
     }
 }

@@ -14,7 +14,7 @@ Pathfinder::Pathfinder()
     const auto& grid = Pacman::GetGrid();
     for (const auto& cell : grid->GetTraversableCellMap())
     {
-        mCellCostMap[grid->GetCellGridPosition(cell.first->GetPosition())] = 1;
+        mCellCostMap[cell.first] = 1;
     }
 }
 

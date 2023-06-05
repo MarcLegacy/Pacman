@@ -46,11 +46,11 @@ sf::Vector2i Grid::GetCellGridPosition(const sf::Vector2f worldPosition) const
     return {x, y};
 }
 
-std::vector<std::shared_ptr<Cell>> Grid::GetNeighboringCells(const int x, const int y)
+std::vector<Cell*> Grid::GetNeighboringCells(const int x, const int y) const
 {
     if (!IsCellValid(x, y)) return {};
 
-    std::vector<std::shared_ptr<Cell>> neighbouringCells{};
+    std::vector<Cell*> neighbouringCells{};
 
     if (x > 0)
     {
@@ -75,7 +75,21 @@ std::vector<std::shared_ptr<Cell>> Grid::GetNeighboringCells(const int x, const 
     return neighbouringCells;
 }
 
-std::shared_ptr<Cell> Grid::GetTeleportToCell(const int x, const int y)
+std::vector<Cell*> Grid::GetTraversableCells(const int x, const int y) const
+{
+    if (!IsCellValid(x, y)) return {};
+
+    std::vector<Cell*> traversableCells{};
+
+    for (const sf::Vector2i traversableGridPosition : mTraversableCellMap.find({ x, y })->second)
+    {
+        traversableCells.push_back(GetCell(traversableGridPosition));
+    }
+
+    return traversableCells;
+}
+
+Cell* Grid::GetTeleportToCell(const int x, const int y)
 {
     const int teleportIndex{ CheckIsTeleportCell(x, y) };
 
@@ -87,7 +101,7 @@ std::shared_ptr<Cell> Grid::GetTeleportToCell(const int x, const int y)
 
     for (auto iterator = mTeleportCellMap.find(teleportIndex); iterator != mTeleportCellMap.end(); ++iterator)
     {
-        if (iterator->second != GetCell(x, y)) return iterator->second;
+        if (GetCell(iterator->second) != GetCell(x, y)) return GetCell(iterator->second);
     }
 
     std::cout << "No linked teleport found!?" << std::endl;
@@ -95,12 +109,12 @@ std::shared_ptr<Cell> Grid::GetTeleportToCell(const int x, const int y)
     return {};
 }
 
-int Grid::CheckIsTeleportCell(const int x, const int y)
+int Grid::CheckIsTeleportCell(const int x, const int y) const
 {
     const auto currentCell{ GetCell(x, y) };
     for (const auto& teleportCell : mTeleportCellMap)
     {
-        if (teleportCell.second == currentCell)
+        if (GetCell(teleportCell.second) == currentCell)
         {
             return teleportCell.first;
         }
@@ -121,12 +135,12 @@ sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
 
 void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
 {
-    for (unsigned int column = 0; column < levelLayout.size(); ++column)
+    for (int column = 0; column < levelLayout.size(); ++column)
     {
         const std::string& layoutString = levelLayout[column];
-        std::vector<std::shared_ptr<Cell>> cellRow{};
+        std::vector<std::unique_ptr<Cell>> cellRow{};
 
-        for (unsigned int row = 0; row < layoutString.size(); ++row)
+        for (int row = 0; row < layoutString.size(); ++row)
         {
             const auto& character = layoutString[row];
             // Calculates position and retrieves the cell type to create a cell.
@@ -150,10 +164,10 @@ void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
                 break;
             }
 
-            auto cell = std::make_shared<Cell>(position, type);
+            auto cell = std::make_unique<Cell>(position, type);
             if (isTeleportCell)
             {
-                mTeleportCellMap.insert(mTeleportCellMap.begin(), std::pair<int, std::shared_ptr<Cell>>(1, cell));    // 0 should eventually be the number of the teleport cell.
+                mTeleportCellMap.insert(mTeleportCellMap.begin(), std::pair<int, sf::Vector2i>(1, {row, column}));    // 0 should eventually be the number of the teleport cell.
             }
             cellRow.push_back(std::move(cell)); // using std::move here, as to avoid having to increment the reference count, which is cheaper.
         }
@@ -170,17 +184,17 @@ void Grid::SetupTraversableCellMap()
         {
             if (cell->GetCellType() == CellType::Wall) continue;    // Don't want to add wall's to the list
 
-            std::vector<std::shared_ptr<Cell>> traversableCells{};
+            std::vector<sf::Vector2i> traversableCellGridPositions{};
 
             for (const auto& neighbouringCell : GetNeighboringCells(cell->GetPosition()))
             {
                 if (neighbouringCell->GetCellType() != CellType::Wall)
                 {
-                    traversableCells.push_back(neighbouringCell);
+                    traversableCellGridPositions.push_back(GetCellGridPosition(neighbouringCell->GetPosition()));
                 }
             }
 
-            mTraversableCellMap[cell] = traversableCells;
+            mTraversableCellMap[GetCellGridPosition(cell->GetPosition())] = traversableCellGridPositions;
         }
     }
 
