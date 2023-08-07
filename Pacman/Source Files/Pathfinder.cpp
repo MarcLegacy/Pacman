@@ -59,7 +59,7 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2i startGridPosition
             if (cellTotalCostMap.find(traversableCellGridPosition) == cellTotalCostMap.end()) // avoid cells that are already in the map, this only works when the travel cost is even in cells
             {
                 const int cellCost = weighted ? mCellCostMap.at(traversableCellGridPosition) : 1; // if the function is weighted. then cell cost is based on how many enemies already pathed over the cell.
-                const int totalCost = currentCost + cellCost + Utility::ManhattanDistance(traversableCellGridPosition, targetGridPosition); 
+                const int totalCost = currentCost + cellCost + Utility::CalculateManhattanDistance(traversableCellGridPosition, targetGridPosition); 
 
                 cellTotalCostMap[traversableCellGridPosition] = totalCost;
                 cameFromMap[traversableCellGridPosition] = currentGridPosition;

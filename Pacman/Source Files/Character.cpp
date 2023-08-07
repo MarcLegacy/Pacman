@@ -85,7 +85,7 @@ void Character::CheckCellChanged()
     const auto& gridPosition = Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition());
 
     // This replaces an event
-    if (Utility::Distance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS && mCurrentGridPosition != gridPosition)
+    if (Utility::CalculateDistance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS && mCurrentGridPosition != gridPosition)
     {
         mOnCellChanged = true;
         mCurrentGridPosition = gridPosition;

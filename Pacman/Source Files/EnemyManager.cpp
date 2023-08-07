@@ -1,6 +1,8 @@
 #include "EnemyManager.h"
 
+#include <chrono>
 #include <iostream>
+#include <unordered_set>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "DrawDebug.h"
@@ -198,24 +200,25 @@ bool EnemyManager::AreCrossroadsEqual(const std::vector<sf::Vector2i>& crossRoad
 {
     if (crossRoadsPositionsA.size() != crossRoadsPositionsB.size()) return false;
 
-    unsigned int equalAmount{ 0 };
     for (const auto& crossRoadPositionA : crossRoadsPositionsA)
     {
+        bool foundMatch = false;
         for (const auto& crossRoadPositionB : crossRoadsPositionsB)
         {
             if (crossRoadPositionA == crossRoadPositionB)
             {
-                equalAmount++;
+                foundMatch = true;
+                break;
             }
+        }
+
+        if (!foundMatch)
+        {
+            return false;
         }
     }
 
-    if (equalAmount == crossRoadsPositionsA.size())
-    {
-        return true;
-    }
-
-    return false;
+    return true;
 }
 
 void EnemyManager::ShowCrossroads(sf::RenderTarget* target, const bool show) const

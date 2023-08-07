@@ -45,7 +45,7 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed
 
 void Enemy::Move(const float deltaTime)
 {
-    if (Utility::Distance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS)
+    if (Utility::CalculateDistance(mPosition, mDestinationWorldPosition) < CELL_REACHED_RADIUS)
     {
         FollowPath();
 

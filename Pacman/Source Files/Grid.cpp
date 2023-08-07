@@ -135,12 +135,12 @@ sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
 
 void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
 {
-    for (int column = 0; column < levelLayout.size(); ++column)
+    for (int column = 0; column < static_cast<int>(levelLayout.size()); ++column)
     {
         const std::string& layoutString = levelLayout[column];
         std::vector<std::unique_ptr<Cell>> cellRow{};
 
-        for (int row = 0; row < layoutString.size(); ++row)
+        for (int row = 0; row < static_cast<int>(layoutString.size()); ++row)
         {
             const auto& character = layoutString[row];
             // Calculates position and retrieves the cell type to create a cell.
@@ -219,8 +219,6 @@ void Grid::SetupCrossroadPositions()
         for (const auto& cell : row)
         {
             if (cell->GetCellType() == CellType::Wall) continue;    // Can avoid walls.
-
-            std::vector<std::shared_ptr<Cell>> traversableCells{};
 
             if (GetTraversableCells(cell->GetPosition()).size() > 2)    // Every cell with more than 2 traversable cells is a crossroad.
             {

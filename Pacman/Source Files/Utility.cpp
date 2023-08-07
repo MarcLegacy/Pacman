@@ -40,3 +40,5 @@ sf::Vector2i Utility::ConvertDirectionToGridDirection(const Direction& direction
         return {};
     }
 }
+
+

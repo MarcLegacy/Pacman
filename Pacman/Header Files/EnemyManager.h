@@ -36,7 +36,7 @@ private:
     void SetEnemyTargetPosition(const unsigned int enemyIndex, std::vector<sf::Vector2i>& closestCrossroadGridPositions);
 
     // Checks vectors if they contain the same grid positions, even when they're not in the same index.
-    bool AreCrossroadsEqual(const std::vector<sf::Vector2i>& crossRoadsPositionsA, const std::vector<sf::Vector2i>& crossRoadsPositionsB);
+    static bool AreCrossroadsEqual(const std::vector<sf::Vector2i>& crossRoadsPositionsA, const std::vector<sf::Vector2i>& crossRoadsPositionsB);
 
     void ShowCrossroads(sf::RenderTarget* target, const bool show = true) const;
     void ShowCrossroadDistanceToTargetCost(sf::RenderTarget* target, const bool show = true) const;
