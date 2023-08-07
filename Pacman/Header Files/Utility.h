@@ -13,7 +13,7 @@ struct Vector2iHasher
     std::size_t operator()(const sf::Vector2i& key) const
     {
         // hashes the integers individually and then combines them.
-        return std::hash<int>()(key.x) * std::hash<int>()(key.y);   // If something goes wrong, use the caret ('^') as operator.
+        return std::hash<int>()(key.x) ^ std::hash<int>()(key.y);
     }
 };
 
