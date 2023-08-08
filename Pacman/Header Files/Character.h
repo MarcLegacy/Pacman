@@ -38,9 +38,9 @@ protected:
     bool mOnCellChanged{ false };
 
 private:
-    void CheckCellChanged();
-    void CheckIfOnWall();
-    void CheckIfOnTeleport();
+    void UpdateCellPositionStatus();
+    void CharacterPositionCorrection();
+    void CharacterTeleportOrCentering();
 
     void ShowCurrentGridPosition(sf::RenderTarget* target, const bool show = true) const;
 };

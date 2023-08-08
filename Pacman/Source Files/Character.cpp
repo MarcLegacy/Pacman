@@ -13,10 +13,10 @@ Character::Character(const sf::Vector2f position, const float speed)
 
 void Character::Update(const float deltaTime)
 {
-    CheckCellChanged();
+    UpdateCellPositionStatus();
 
-    CheckIfOnTeleport();
-    CheckIfOnWall();
+    CharacterTeleportOrCentering();
+    CharacterPositionCorrection();
 
     Move(deltaTime);
 
@@ -80,7 +80,7 @@ bool Character::IsGoingBack() const
     return false;
 }
 
-void Character::CheckCellChanged()
+void Character::UpdateCellPositionStatus()
 {
     const auto& gridPosition = Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition());
 
@@ -96,7 +96,7 @@ void Character::CheckCellChanged()
     }
 }
 
-void Character::CheckIfOnWall()
+void Character::CharacterPositionCorrection()
 {
     const auto& grid = Pacman::GetGrid();
 
@@ -108,7 +108,7 @@ void Character::CheckIfOnWall()
     }
 }
 
-void Character::CheckIfOnTeleport()
+void Character::CharacterTeleportOrCentering()
 {
     const auto& grid = Pacman::GetGrid();
 
