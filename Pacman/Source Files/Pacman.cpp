@@ -75,7 +75,7 @@ bool Pacman::IsRunning() const
 void Pacman::Update(const float deltaTime)
 {
     PollEvents();
-    //FPSTimer(deltaTime);
+    FPSTimer(deltaTime, 1.0f);
 
     // Makes sure that when the screen is dragged, that the game is paused to avoid creating a big difference in delta time and giving the player time to prepare for the game.
     if (mCurrentScreenPosition != mWindow->getPosition())
@@ -140,17 +140,24 @@ void Pacman::PollEvents()
 
 }
 
-void Pacman::FPSTimer(const float deltaTime)
+void Pacman::FPSTimer(const float deltaTime, const float logTimer) const
 {
-    // TODO: Get the average over time instead of one frame, because this is not accurate.
-    if (mFpsTimer < 1.0f)
+    static float fpsTimer = 0.0f;
+    static int frameCount = 0;
+    static float totalFPS = 0.0f;
+
+    fpsTimer += deltaTime;
+    frameCount++;
+    totalFPS += 1.0f / deltaTime;
+
+    if (fpsTimer >= logTimer)
     {
-        mFpsTimer += deltaTime;
-    }
-    else
-    {
-        mFpsTimer = 0.0f;
-        std::cout << "FPS: " << floorf(1 / deltaTime * 100) / 100 << std::endl;
+        const float averageFPS = totalFPS / static_cast<float>(frameCount);
+        std::cout << "Average FPS: " << floorf(averageFPS * 100) / 100 << std::endl;
+
+        fpsTimer = 0.0f;
+        frameCount = 0;
+        totalFPS = 0.0f;
     }
 }
 

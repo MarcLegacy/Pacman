@@ -46,7 +46,7 @@ public:
 private:
     void Draw();
     void PollEvents();
-    void FPSTimer(const float deltaTime);
+    void FPSTimer(const float deltaTime, const float logTimer) const;
     void DrawTraversableMapPersistant() const;
     void InitializeObjects();
     void CheckCharacterContact();
@@ -56,7 +56,6 @@ private:
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};
 
-    float mFpsTimer{};
     GameState mGameState{ GameState::Start };
     sf::Font mFont{};
     sf::Vector2i mCurrentScreenPosition{};

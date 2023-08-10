@@ -50,29 +50,29 @@ std::vector<Cell*> Grid::GetNeighboringCells(const int x, const int y) const
 {
     if (!IsCellValid(x, y)) return {};
 
-    std::vector<Cell*> neighbouringCells{};
+    std::vector<Cell*> neighboringCells{};
 
     if (x > 0)
     {
-        neighbouringCells.push_back(GetCell(x - 1, y));
+        neighboringCells.push_back(GetCell(x - 1, y));
     }
 
     if (x < mWidth - 1)
     {
-        neighbouringCells.push_back(GetCell(x + 1, y));
+        neighboringCells.push_back(GetCell(x + 1, y));
     }
 
     if (y > 0)
     {
-        neighbouringCells.push_back(GetCell(x, y - 1));
+        neighboringCells.push_back(GetCell(x, y - 1));
     }
 
     if (y < mHeight - 1)
     {
-        neighbouringCells.push_back(GetCell(x, y + 1));
+        neighboringCells.push_back(GetCell(x, y + 1));
     }
 
-    return neighbouringCells;
+    return neighboringCells;
 }
 
 std::vector<Cell*> Grid::GetTraversableCells(const int x, const int y) const
