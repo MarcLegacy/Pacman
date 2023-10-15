@@ -33,6 +33,13 @@ void Player::Move(const float deltaTime)
                 mDestinationWorldPosition = Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition());
             }
         }
+
+        // Check if on cell with Pill
+        if (Pacman::GetGrid()->IsCellWithPill(GetCenterPosition()))
+        {
+            Pacman::GetGrid()->GetCell(GetCenterPosition())->RemovePill();
+            //Pacman::GetGrid()->IncreaseScore();
+        }
     }
     else
     {

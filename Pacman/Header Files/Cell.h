@@ -5,7 +5,8 @@
 enum class CellType
 {
     Empty,
-    Wall
+    Wall,
+    Pill
 };
 
 class Cell : public Object
@@ -18,6 +19,7 @@ public:
     void Update(float deltaTime) override;
 
     CellType GetCellType() const { return mCellType; }
+    void RemovePill();
 
 private:
     CellType mCellType{};

@@ -146,11 +146,17 @@ void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
             // Calculates position and retrieves the cell type to create a cell.
             sf::Vector2f position{ GetCellWorldPosition(row, column) };
 
-            CellType type = character == '*' ? CellType::Wall : CellType::Empty;
+            CellType type = CellType::Empty;
             bool isTeleportCell{ false };
 
             switch (character)
             {
+            case '*':
+                type = CellType::Wall;
+                break;
+            case '.':
+                type = CellType::Pill;
+                break;
             case 'P':
                 mPlayerSpawnPosition = position;
                 break;
