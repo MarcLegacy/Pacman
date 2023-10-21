@@ -10,26 +10,27 @@
 #include "Pathfinder.h"
 #include "Utility.h"
 
-Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed)
+Enemy::Enemy(const sf::Vector2f position, const SkinColor skinColor, const float speed)
     : Character(position)
 {
-    std::string fileName{};
+    int spriteYPos{};
+
     switch (skinColor)
     {
     case SkinColor::Blue:
-        fileName = "Resource Files/EnemyBlue.png";
+        spriteYPos = 97;
         mPathColor = sf::Color::Blue;
         break;
     case SkinColor::Orange:
-        fileName = "Resource Files/EnemyOrange.png";
+        spriteYPos = 113;
         mPathColor = { 230, 126, 34 };
         break;
     case SkinColor::Pink:
-        fileName = "Resource Files/EnemyPink.png";
+        spriteYPos = 81;
         mPathColor = { 245, 183, 177 };
         break;
     case SkinColor::Red:
-        fileName = "Resource Files/EnemyRed.png";
+        spriteYPos = 65;
         mPathColor = sf::Color::Red;
         break;
     default:
@@ -37,10 +38,13 @@ Enemy::Enemy(const sf::Vector2f position, SkinColor skinColor, const float speed
         break;
     }
 
-    if (mTexture.loadFromFile(fileName))
+    if (mTexture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(68, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
     {
         mSprite.setTexture(mTexture);
+        mSprite.setScale(1.0f / ENEMY_SIZE * CELL_SIZE, 1.0f / ENEMY_SIZE * CELL_SIZE);
     }
+
+    LoadTextures(spriteYPos);
 }
 
 void Enemy::Move(const float deltaTime)
@@ -114,6 +118,44 @@ void Enemy::ShowTargetGridPosition(sf::RenderTarget* target, const bool show) co
     if (!show) return;
 
     target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(mTargetGridPosition), CELL_SIZE, mPathColor));
+}
+
+void Enemy::LoadTextures(const int spriteYPos)
+{
+    sf::Texture texture;
+
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(68, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Up, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(84, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Up, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(100, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Down, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(116, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Down, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(36, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Left, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(52, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Left, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(4, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Right, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(20, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mTextures.emplace(Direction::Right, texture);
+    }
 }
 
 

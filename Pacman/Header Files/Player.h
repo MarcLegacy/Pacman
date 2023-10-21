@@ -7,9 +7,17 @@ class Player : public Character
 {
 public:
     Player(const sf::Vector2f position, const float speed = 100.0f);
-
     void Move(const float deltaTime) override;
     void PlayerInput();
+
+    void IncreaseScore(const int score) { mScore += score; }
+
+    int GetScore() const { return mScore; }
+
+private:
+    void LoadTextures();
+
+    int mScore{ 0 };
 };
 
 

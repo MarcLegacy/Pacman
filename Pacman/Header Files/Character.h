@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 #include "GlobalEnums.h"
 #include "Object.h"
 
@@ -36,6 +38,7 @@ protected:
     sf::Vector2f mDestinationWorldPosition{};
     sf::Vector2i mCurrentGridPosition{};
     bool mOnCellChanged{ false };
+    std::multimap<Direction, sf::Texture> mTextures{};
 
 private:
     void UpdateCellPositionStatus();
@@ -43,5 +46,10 @@ private:
     void CharacterTeleportOrCentering();
 
     void ShowCurrentGridPosition(sf::RenderTarget* target, const bool show = true) const;
+
+    void Animation(float deltaTime);
+
+    bool firstTexture{ true };
+    float animationTimer{ 0.0f };
 };
 

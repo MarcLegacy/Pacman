@@ -26,6 +26,8 @@ private:
     void ShowDebugPathArrows(sf::RenderTarget* target, const bool show = true) const;
     void ShowTargetGridPosition(sf::RenderTarget* target, const bool show = true) const;
 
+    void LoadTextures(int spriteYPos);
+
     std::vector<sf::Vector2i> mPath{};
     unsigned int mCurrentPathIndex{};
     sf::Color mPathColor{};

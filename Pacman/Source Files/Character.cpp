@@ -20,6 +20,8 @@ void Character::Update(const float deltaTime)
 
     Move(deltaTime);
 
+    Animation(deltaTime);
+
     mSprite.setPosition(mPosition);
 }
 
@@ -131,4 +133,28 @@ void Character::ShowCurrentGridPosition(sf::RenderTarget* target, const bool sho
     if (!show) return;
 
     target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
+}
+
+void Character::Animation(const float deltaTime)
+{
+    if (mCurrentDirection == Direction::Invalid || mTextures.empty()) return;
+
+    animationTimer -= deltaTime;
+
+    if (animationTimer > 0.0f) return;
+
+    animationTimer = 0.25f;
+    auto it = mTextures.equal_range(mCurrentDirection);
+
+    if (firstTexture)
+    {
+        firstTexture = false;
+        ++it.first;
+    }
+    else
+    {
+        firstTexture = true;
+    }
+
+    mSprite.setTexture(it.first->second);
 }

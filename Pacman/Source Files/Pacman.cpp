@@ -100,6 +100,7 @@ void Pacman::Draw()
     mEnemyManager->Draw(mWindow.get());
 
     ShowGameText();
+    ShowScoreText();
 }
 
 void Pacman::Render()
@@ -191,7 +192,7 @@ void Pacman::CheckCharacterContact()
     }
 }
 
-void Pacman::ShowGameText()
+void Pacman::ShowGameText() const
 {
     // TODO: Have the positions set dynamically depending on the screen size.
     sf::Text text{};
@@ -214,6 +215,17 @@ void Pacman::ShowGameText()
         text.setPosition(350.0f, 440.0f);
         break;
     }
+
+    mWindow->draw(text);
+}
+
+void Pacman::ShowScoreText() const
+{
+    sf::Text text{};
+    text.setFont(mFont);
+
+    text.setString(std::to_string(mPlayer->GetScore()));
+    text.setPosition(0.0f, 0.0f);
 
     mWindow->draw(text);
 }

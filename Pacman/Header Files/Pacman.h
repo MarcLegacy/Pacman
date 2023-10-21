@@ -50,7 +50,8 @@ private:
     void DrawTraversableMapPersistant() const;
     void InitializeObjects();
     void CheckCharacterContact();
-    void ShowGameText();
+    void ShowGameText() const;
+    void ShowScoreText() const;
     void ReadLayoutFromFile();
 
     std::unique_ptr<sf::RenderWindow> mWindow{};

@@ -2,6 +2,7 @@
 
 #include <SFML/Window/Keyboard.hpp>
 
+#include "GlobalConstants.h"
 #include "Pacman.h"
 #include "Grid.h"
 #include "Utility.h"
@@ -9,10 +10,13 @@
 Player::Player(const sf::Vector2f position, const float speed)
     : Character(position, speed)
 {
-    if (mTexture.loadFromFile("Resource Files/Player.png"))
+    if (mTexture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(36, 1, PACMAN_SIZE, PACMAN_SIZE)))
     {
         mSprite.setTexture(mTexture);
+        mSprite.setScale(1.0f / PACMAN_SIZE * CELL_SIZE, 1.0f / PACMAN_SIZE * CELL_SIZE);
     }
+
+    LoadTextures();
 }
 
 void Player::Move(const float deltaTime)
@@ -38,7 +42,7 @@ void Player::Move(const float deltaTime)
         if (Pacman::GetGrid()->IsCellWithPill(GetCenterPosition()))
         {
             Pacman::GetGrid()->GetCell(GetCenterPosition())->RemovePill();
-            //Pacman::GetGrid()->IncreaseScore();
+            IncreaseScore(PILL_SCORE);
         }
     }
     else
@@ -67,6 +71,45 @@ void Player::PlayerInput()
         mDesiredDirection = Direction::Right;
     }
 }
+
+void Player::LoadTextures()
+{
+    sf::Texture texture;
+
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(20, 33, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Up, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(4, 33, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Up, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(20, 49, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Down, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(4, 49, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Down, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(20, 17, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Left, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(4, 17, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Left, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(20, 1, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Right, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(4, 1, PACMAN_SIZE, PACMAN_SIZE)))
+    {
+        mTextures.emplace(Direction::Right, texture);
+    }
+}
+
 
 
 
