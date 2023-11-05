@@ -35,11 +35,14 @@ Pacman::Pacman()
     mCurrentScreenPosition = mWindow->getPosition();
 
     mGridSize = { static_cast<int>(mLevelLayout[0].size()), static_cast<int>(mLevelLayout.size()) };
-    mFont.loadFromFile("Resource Files/Font.ttf");
 
+    LoadFiles();
     InitializeObjects();
 
     mPathfinder = std::make_unique<Pathfinder>();
+
+
+
 }
 
 Pacman::~Pacman()
@@ -98,6 +101,10 @@ void Pacman::Draw()
     mGrid->Draw(mWindow.get());
     mDrawDebug->Draw(mWindow.get());
     mEnemyManager->Draw(mWindow.get());
+    for (int i = 0; i < mPlayer->GetLives(); i++)
+    {
+        mWindow->draw(mLifeSprites[i]);
+    }
 
     ShowGameText();
     ShowScoreText();
@@ -177,7 +184,7 @@ void Pacman::InitializeObjects()
 {
     mGrid = std::make_unique<Grid>(mGridSize.x, mGridSize.y, CELL_SIZE, mLevelLayout);
     mDrawDebug = std::make_unique<DrawDebug>();
-    mPlayer = std::make_unique<Player>(mGrid->GetPlayerSpawnPosition());
+    mPlayer = std::make_unique<Player>(mGrid->GetPlayerSpawnPosition(), CHARACTER_SPEED, PLAYER_LIFE_AMOUNT);
     mEnemyManager = std::make_unique<EnemyManager>(mPlayer);
 }
 
@@ -187,7 +194,17 @@ void Pacman::CheckCharacterContact()
     {
         if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
         {
-            mGameState = GameState::GameOver;
+            mPlayer->LoseLife();
+
+            if (mPlayer->GetLives() <= 0)
+            {
+                mGameState = GameState::GameOver;
+                return;
+            }
+
+            ResetPositions();
+            mGameState = GameState::Paused;
+            return;
         }
     }
 }
@@ -250,6 +267,37 @@ void Pacman::ReadLayoutFromFile()
         std::cout << "Could not open file!" << std::endl;
         std::cout << "make sure the txt file is inside the 'Resource Files' folder and called 'LevelLayout'!" << std::endl;
     }
+}
+
+void Pacman::LoadFiles()
+{
+    if (!mFont.loadFromFile("Resource Files/Font.ttf"))
+    {
+        std::cout << "The program will be closed." << std::endl;
+        exit(0);
+    }
+
+    if (!mLifeTexture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(133, 18, 11, 11)))
+    {
+        std::cout << "The program will be closed." << std::endl;
+        exit(0);
+    }
+
+    for (int i = 0; i < PLAYER_LIFE_AMOUNT; i++)
+    {
+        sf::Sprite lifeSprite{};
+        lifeSprite.setTexture(mLifeTexture);
+        // Left bottom positioning with middle of cell and middle of life sprite added.
+        sf::Vector2f position{ CELL_SIZE * 0.5f - static_cast<float>(mLifeTexture.getSize().x) * 0.5f + CELL_SIZE * static_cast<float>(i), static_cast<float>(mWindow->getSize().y) - CELL_SIZE * 0.5f - static_cast<float>(mLifeTexture.getSize().y) * 0.5f};
+        lifeSprite.setPosition(position);
+        mLifeSprites.push_back(lifeSprite);
+    }
+}
+
+void Pacman::ResetPositions() const
+{
+    mPlayer->ResetPosition();
+    mEnemyManager->ResetPositions();
 }
 
 

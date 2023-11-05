@@ -16,6 +16,7 @@ class DrawDebug;
 
 namespace sf
 {
+    class Sprite;
     class Event;
     class RenderWindow;
 }
@@ -53,6 +54,8 @@ private:
     void ShowGameText() const;
     void ShowScoreText() const;
     void ReadLayoutFromFile();
+    void LoadFiles();
+    void ResetPositions() const;
 
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};
@@ -62,6 +65,8 @@ private:
     sf::Vector2i mCurrentScreenPosition{};
     std::vector<std::string> mLevelLayout{};
     sf::Vector2i mGridSize{};
+    sf::Texture mLifeTexture{};
+    std::vector<sf::Sprite> mLifeSprites{};
 
     std::unique_ptr<Player> mPlayer{};
 

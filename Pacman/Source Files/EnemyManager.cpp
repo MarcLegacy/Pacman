@@ -15,11 +15,11 @@ EnemyManager::EnemyManager(std::unique_ptr<Player>& target)
 {
     const auto& grid = Pacman::GetGrid();
 
-    auto enemyBlue = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(0), SkinColor::Blue);
+    auto enemyBlue = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(0), SkinColor::Blue, CHARACTER_SPEED);
     mEnemies.push_back(std::move(enemyBlue));
-    auto enemyRed = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(1), SkinColor::Red);
+    auto enemyRed = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(1), SkinColor::Red, CHARACTER_SPEED);
     mEnemies.push_back(std::move(enemyRed));
-    auto enemyOrange = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(2), SkinColor::Orange);
+    auto enemyOrange = std::make_unique<Enemy>(grid->GetEnemySpawnPosition(2), SkinColor::Orange, CHARACTER_SPEED);
     mEnemies.push_back(std::move(enemyOrange));
 
     for (const auto& gridPosition : grid->GetCrossroadPositions())
@@ -96,6 +96,14 @@ void EnemyManager::SurroundTactic()
         SetEnemyTargetPosition(closestEnemyIndex, closestCrossroadGridPositions);
         SetEnemyTargetPosition(middleEnemyIndex, closestCrossroadGridPositions);
         SetEnemyTargetPosition(furthestEnemyIndex, closestCrossroadGridPositions);
+    }
+}
+
+void EnemyManager::ResetPositions() const
+{
+    for (const auto& enemy : mEnemies)
+    {
+        enemy->ResetPosition();
     }
 }
 

@@ -9,20 +9,32 @@ Cell::Cell(const sf::Vector2f position) : Object(position) {}
 
 Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(position), mCellType(cellType)
 {
+    static sf::Texture wallTexture;
+    static sf::Texture pillTexture;
+
+    if (wallTexture.getSize().x == 0 && wallTexture.getSize().y == 0)
+    {
+        wallTexture.loadFromFile("Resource Files/Wall.png");
+    }
+    if (pillTexture.getSize().x == 0 && pillTexture.getSize().y == 0)
+    {
+        pillTexture.loadFromFile("Resource Files/Pill.png");
+    }
+
     switch (cellType)
     {
     case CellType::Empty:
         break;
     case CellType::Wall:
-        if (mTexture.loadFromFile("Resource Files/Wall.png"))
+        if (wallTexture.getSize().x != 0 || wallTexture.getSize().y != 0)
         {
-            mSprite.setTexture(mTexture);
+            mSprite.setTexture(wallTexture);
         }
         break;
     case CellType::Pill:
-        if (mTexture.loadFromFile("Resource Files/Pill.png"))
+        if (pillTexture.getSize().x != 0 || pillTexture.getSize().y != 0)
         {
-            mSprite.setTexture(mTexture);
+            mSprite.setTexture(pillTexture);
             mSprite.setPosition(position.x + (CELL_SIZE * 0.5f), position.y + (CELL_SIZE * 0.5f));
         }
         break;

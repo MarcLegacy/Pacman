@@ -7,8 +7,8 @@
 #include "Grid.h"
 #include "Utility.h"
 
-Player::Player(const sf::Vector2f position, const float speed)
-    : Character(position, speed)
+Player::Player(const sf::Vector2f position, const float speed, const int lives)
+    : Character(position, speed), mLives(lives)
 {
     if (mTexture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(36, 1, PACMAN_SIZE, PACMAN_SIZE)))
     {

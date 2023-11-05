@@ -11,7 +11,7 @@
 #include "Utility.h"
 
 Enemy::Enemy(const sf::Vector2f position, const SkinColor skinColor, const float speed)
-    : Character(position)
+    : Character(position, speed)
 {
     int spriteYPos{};
 

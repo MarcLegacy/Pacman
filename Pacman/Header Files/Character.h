@@ -18,6 +18,8 @@ public:
 
     Direction GetCurrentDirection() const { return mCurrentDirection; }
 
+    void ResetPosition() { mPosition = mStartingPosition; }
+
 protected:
     const float CELL_REACHED_RADIUS{ 3.0f };
 
@@ -51,5 +53,6 @@ private:
 
     bool firstTexture{ true };
     float animationTimer{ 0.0f };
+    sf::Vector2f mStartingPosition{};
 };
 

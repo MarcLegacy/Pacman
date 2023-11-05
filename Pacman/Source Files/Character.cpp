@@ -9,7 +9,7 @@
 
 
 Character::Character(const sf::Vector2f position, const float speed)
-    : Object(position), mSpeed(speed), mDestinationWorldPosition(mPosition) {}
+    : Object(position), mSpeed(speed), mDestinationWorldPosition(mPosition), mStartingPosition(position) {}
 
 void Character::Update(const float deltaTime)
 {
@@ -137,7 +137,7 @@ void Character::ShowCurrentGridPosition(sf::RenderTarget* target, const bool sho
 
 void Character::Animation(const float deltaTime)
 {
-    if (mCurrentDirection == Direction::Invalid || mTextures.empty()) return;
+    //if (mCurrentDirection == Direction::Invalid || mTextures.empty()) return;
 
     animationTimer -= deltaTime;
 

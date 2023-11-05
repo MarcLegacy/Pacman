@@ -20,6 +20,8 @@ public:
     // Makes the enemies move to different crossroads to trap the player.
     void SurroundTactic();
 
+    void ResetPositions() const;
+
     const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return mEnemies; }
 
 private:
