@@ -89,10 +89,10 @@ void Pacman::Update(const float deltaTime)
 
     if (mGameState != GameState::Playing) return;
 
+    CheckCharacterContact();
+
     mPlayer->Update(deltaTime);
     mEnemyManager->Update(deltaTime);
-
-    CheckCharacterContact();
 }
 
 void Pacman::Draw()
@@ -138,6 +138,10 @@ void Pacman::PollEvents()
                 else if (mGameState != GameState::GameOver)
                 {
                     mGameState = GameState::Paused;
+                }
+                else
+                {
+                    ResetGame();
                 }
             }
             break;
@@ -228,8 +232,8 @@ void Pacman::ShowGameText() const
         text.setPosition(180.0f, 440.0f);
         break;
     case GameState::GameOver:
-        text.setString("Game Over!");
-        text.setPosition(350.0f, 440.0f);
+        text.setString("        Game Over! \n    Your Score: " + std::to_string(mPlayer->GetScore()) + "\n Press 'Space' to restart.");
+        text.setPosition(180.0f, 440.0f);
         break;
     }
 
@@ -298,6 +302,15 @@ void Pacman::ResetPositions() const
 {
     mPlayer->ResetPosition();
     mEnemyManager->ResetPositions();
+}
+
+void Pacman::ResetGame()
+{
+    ResetPositions();
+    mPlayer->ResetScore();
+    mPlayer->ResetLives();
+    mGrid->ResetPills();
+    mGameState = GameState::Start;
 }
 
 

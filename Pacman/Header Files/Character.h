@@ -18,7 +18,7 @@ public:
 
     Direction GetCurrentDirection() const { return mCurrentDirection; }
 
-    void ResetPosition() { mPosition = mStartingPosition; }
+    void ResetPosition() { mPosition = mStartingPosition; mSprite.setPosition(mPosition); mSprite.setTexture(mTexture); }
 
 protected:
     const float CELL_REACHED_RADIUS{ 3.0f };

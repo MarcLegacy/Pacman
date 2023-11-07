@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Character.h"
+#include "GlobalConstants.h"
 #include "Object.h"
 
 class Player : public Character
@@ -11,11 +12,14 @@ public:
     void PlayerInput();
 
     void IncreaseScore(const int score) { mScore += score; }
+    void LoseLife() { mLives--; }
+    void ResetScore() { mScore = 0; }
+    void ResetLives() { mLives = PLAYER_LIFE_AMOUNT; }
 
     int GetScore() const { return mScore; }
     int GetLives() const { return mLives; }
 
-    void LoseLife() { mLives--; }
+
 
 private:
     void LoadTextures();

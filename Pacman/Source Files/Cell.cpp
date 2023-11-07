@@ -36,6 +36,7 @@ Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(positi
         {
             mSprite.setTexture(pillTexture);
             mSprite.setPosition(position.x + (CELL_SIZE * 0.5f), position.y + (CELL_SIZE * 0.5f));
+            mContainsPill = true;
         }
         break;
     default:
@@ -45,14 +46,25 @@ Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(positi
 
 void Cell::Update(float deltaTime) {}
 
+void Cell::Draw(sf::RenderTarget* target)
+{
+    if (mCellType == CellType::Pill && !mContainsPill) return;
+
+    Object::Draw(target);
+}
+
 void Cell::RemovePill()
+{
+    if (mCellType == CellType::Pill && mContainsPill)
+    {
+        mContainsPill = false;
+    }
+}
+
+void Cell::ResetPill()
 {
     if (mCellType != CellType::Pill) return;
 
-    mCellType = CellType::Empty;
-
-    // set to empty sprite
-    const sf::Sprite sprite;
-    mSprite = sprite;
+    mContainsPill = true;
 }
 

@@ -133,6 +133,17 @@ sf::Vector2f Grid::GetEnemySpawnPosition(const int number) const
     return sf::Vector2f{};
 }
 
+void Grid::ResetPills() const
+{
+    for (const auto& row : mGridCells)
+    {
+        for (const auto& cell : row)
+        {
+            cell->ResetPill();
+        }
+    }
+}
+
 void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
 {
     for (int column = 0; column < static_cast<int>(levelLayout.size()); ++column)

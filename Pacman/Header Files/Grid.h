@@ -63,7 +63,8 @@ public:
     sf::Vector2f GetEnemySpawnPosition(const int number) const;
     const std::vector<sf::Vector2i>& GetCrossroadPositions() const { return mCrossroadPositions; }
 
-    bool IsCellWithPill(const sf::Vector2f worldPosition) const { return GetCell(worldPosition)->GetCellType() == CellType::Pill; }
+    bool IsCellWithPill(const sf::Vector2f worldPosition) const { return GetCell(worldPosition)->ContainsPill(); }
+    void ResetPills() const;
 
 private:
     void SetupGridFromFile(const std::vector<std::string>& levelLayout);

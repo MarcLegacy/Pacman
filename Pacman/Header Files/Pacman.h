@@ -56,6 +56,7 @@ private:
     void ReadLayoutFromFile();
     void LoadFiles();
     void ResetPositions() const;
+    void ResetGame();
 
     std::unique_ptr<sf::RenderWindow> mWindow{};
     std::unique_ptr<sf::Event> mEvent{};
