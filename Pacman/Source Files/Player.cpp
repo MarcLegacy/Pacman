@@ -43,6 +43,7 @@ void Player::Move(const float deltaTime)
         {
             Pacman::GetGrid()->GetCell(GetCenterPosition())->RemovePill();
             IncreaseScore(PILL_SCORE);
+            mTotalPillsCaught++;
         }
     }
     else

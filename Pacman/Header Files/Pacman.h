@@ -26,7 +26,8 @@ enum class GameState
     Start,
     Paused,
     Playing,
-    GameOver
+    GameOver,
+    Victory
 };
 
 class Pacman

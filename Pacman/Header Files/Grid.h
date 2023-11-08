@@ -65,6 +65,7 @@ public:
 
     bool IsCellWithPill(const sf::Vector2f worldPosition) const { return GetCell(worldPosition)->ContainsPill(); }
     void ResetPills() const;
+    int GetTotalPillCount() const { return mTotalPillCount; }
 
 private:
     void SetupGridFromFile(const std::vector<std::string>& levelLayout);
@@ -79,6 +80,7 @@ private:
     int mWidth{};
     int mHeight{};
     float mCellSize{};
+    int mTotalPillCount{};
 
     sf::Vector2f mOriginPosition{};
     sf::Vector2f mPlayerSpawnPosition{};

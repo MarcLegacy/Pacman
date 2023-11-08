@@ -13,19 +13,18 @@ public:
 
     void IncreaseScore(const int score) { mScore += score; }
     void LoseLife() { mLives--; }
-    void ResetScore() { mScore = 0; }
-    void ResetLives() { mLives = PLAYER_LIFE_AMOUNT; }
+    void ResetStats() { mScore = 0; mLives = PLAYER_LIFE_AMOUNT; mTotalPillsCaught = 0; }
 
     int GetScore() const { return mScore; }
     int GetLives() const { return mLives; }
-
-
+    int GetTotalPillsCaught() const { return mTotalPillsCaught; }
 
 private:
     void LoadTextures();
 
-    int mScore{ 0 };
-    int mLives{ 0 };
+    int mScore{};
+    int mLives{};
+    int mTotalPillsCaught{};
 };
 
 
