@@ -6,7 +6,8 @@ enum class CellType
 {
     Empty,
     Wall,
-    Pill
+    Pill,
+    PowerPill
 };
 
 class Cell : public Object

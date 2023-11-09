@@ -169,6 +169,9 @@ void Grid::SetupGridFromFile(const std::vector<std::string>& levelLayout)
                 type = CellType::Pill;
                     mTotalPillCount++;
                 break;
+            case '+':
+                type = CellType::PowerPill;
+                break;
             case 'P':
                 mPlayerSpawnPosition = position;
                 break;
