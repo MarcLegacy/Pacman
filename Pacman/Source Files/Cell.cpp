@@ -59,6 +59,8 @@ Cell::Cell(const sf::Vector2f position, const CellType cellType) : Object(positi
             const float halfPillWidth = static_cast<float>(powerPillTexture.getSize().x) * 0.5f * mSprite.getScale().x;
             const float halfPillHeight = static_cast<float>(powerPillTexture.getSize().y) * 0.5f * mSprite.getScale().y;
             mSprite.setPosition(position.x + halfCellSize - halfPillWidth, position.y + halfCellSize - halfPillHeight);
+
+            mContainsPill = true;
         }
         break;
     default:
@@ -70,14 +72,14 @@ void Cell::Update(float deltaTime) {}
 
 void Cell::Draw(sf::RenderTarget* target)
 {
-    if (mCellType == CellType::Pill && !mContainsPill) return;
+    if ((mCellType == CellType::Pill || mCellType == CellType::PowerPill) && !mContainsPill) return;
 
     Object::Draw(target);
 }
 
 void Cell::RemovePill()
 {
-    if (mCellType == CellType::Pill && mContainsPill)
+    if ((mCellType == CellType::Pill || mCellType == CellType::PowerPill) && mContainsPill)
     {
         mContainsPill = false;
     }
@@ -85,8 +87,9 @@ void Cell::RemovePill()
 
 void Cell::ResetPill()
 {
-    if (mCellType != CellType::Pill) return;
-
-    mContainsPill = true;
+    if (mCellType == CellType::Pill || mCellType == CellType::PowerPill)
+    {
+        mContainsPill = true;
+    }
 }
 

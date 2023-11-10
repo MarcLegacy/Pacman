@@ -9,6 +9,13 @@
 class Player;
 class Enemy;
 
+enum class EnemyMode
+{
+    Chase,
+    Scatter
+};
+
+
 class EnemyManager
 {
 public:
@@ -19,10 +26,11 @@ public:
 
     // Makes the enemies move to different crossroads to trap the player.
     void SurroundTactic();
-
     void ResetPositions() const;
+    void SwitchEnemyMode();
 
     const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return mEnemies; }
+    EnemyMode GetEnemyMode() const { return mEnemyMode; }
 
 private:
     std::vector<sf::Vector2i> CollectCalculatedPaths() const;
@@ -48,6 +56,8 @@ private:
     std::unique_ptr<Player>& mTarget;
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mTargetDistanceToCrossroadMap{};
     std::vector<sf::Vector2i> mCurrentClosestCrossroadGridPositions{};
+
+    EnemyMode mEnemyMode{ EnemyMode::Chase };
 };
 
 

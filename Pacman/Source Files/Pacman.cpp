@@ -203,17 +203,25 @@ void Pacman::CheckCharacterContact()
     {
         if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
         {
-            mPlayer->LoseLife();
-
-            if (mPlayer->GetLives() <= 0)
+            switch (mEnemyManager->GetEnemyMode())
             {
-                mGameState = GameState::GameOver;
-                return;
-            }
+            case EnemyMode::Chase:
+                mPlayer->LoseLife();
 
-            ResetPositions();
-            mGameState = GameState::Paused;
-            return;
+                if (mPlayer->GetLives() <= 0)
+                {
+                    mGameState = GameState::GameOver;
+                    return;
+                }
+
+                ResetPositions();
+                mGameState = GameState::Paused;
+                return;
+            case EnemyMode::Scatter:
+                enemy->ResetPosition();
+                mPlayer->IncreaseScore(ENEMY_KILLED_SCORE);
+                break;
+            }
         }
     }
 }

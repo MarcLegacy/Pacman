@@ -2,6 +2,7 @@
 
 #include <SFML/Window/Keyboard.hpp>
 
+#include "EnemyManager.h"
 #include "GlobalConstants.h"
 #include "Pacman.h"
 #include "Grid.h"
@@ -42,8 +43,16 @@ void Player::Move(const float deltaTime)
         if (Pacman::GetGrid()->IsCellWithPill(GetCenterPosition()))
         {
             Pacman::GetGrid()->GetCell(GetCenterPosition())->RemovePill();
-            IncreaseScore(PILL_SCORE);
-            mTotalPillsCaught++;
+
+            if (Pacman::GetGrid()->GetCell(GetCenterPosition())->GetCellType() == CellType::Pill)
+            {
+                IncreaseScore(PILL_SCORE);
+                mTotalPillsCaught++;
+            }
+            else
+            {
+                Pacman::GetEnemyManager()->SwitchEnemyMode();
+            }
         }
     }
     else

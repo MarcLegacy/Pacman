@@ -32,22 +32,43 @@ void EnemyManager::Update(const float deltaTime)
 {
     const auto& grid = Pacman::GetGrid();
 
-    for (const auto& enemy : mEnemies)
+    switch (mEnemyMode)
     {
-        enemy->Update(deltaTime);
-
-        // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
-        if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
+    case EnemyMode::Chase:
+        for (const auto& enemy : mEnemies)
         {
-            enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
+            enemy->Update(deltaTime);
+
+            // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
+            if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
+            {
+                enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
+            }
+        }
+
+        if (mTarget->GetOnCellChanged())
+        {
+            UpdateTargetDistanceToCrossroadMap();
+            SurroundTactic();
+        }
+        break;
+    case EnemyMode::Scatter:
+        {
+            for (const auto& enemy : mEnemies)
+            {
+                enemy->Update(deltaTime);
+
+                // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
+                if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
+                {
+                    enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
+                }
+            }
+        break;
         }
     }
 
-    if (mTarget->GetOnCellChanged())
-    {
-        UpdateTargetDistanceToCrossroadMap();
-        SurroundTactic();
-    }
+
 }
 
 void EnemyManager::Draw(sf::RenderTarget* target)
@@ -104,6 +125,16 @@ void EnemyManager::ResetPositions() const
     for (const auto& enemy : mEnemies)
     {
         enemy->ResetPosition();
+    }
+}
+
+void EnemyManager::SwitchEnemyMode()
+{
+    mEnemyMode = mEnemyMode == EnemyMode::Chase ? EnemyMode::Scatter : EnemyMode::Chase;
+
+    for (const auto& enemy : mEnemies)
+    {
+        enemy->ClearPath();
     }
 }
 

@@ -13,7 +13,6 @@ public:
 
     // Find a path using the A* algorithm.
     void FindPath(const sf::Vector2i targetGridPosition, const bool withWeight = false);
-
     void ClearPath() { mPath.clear(); }
 
     const std::vector<sf::Vector2i>& GetPath() const { return mPath; }
