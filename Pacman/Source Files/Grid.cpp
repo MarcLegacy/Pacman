@@ -77,7 +77,7 @@ std::vector<Cell*> Grid::GetNeighboringCells(const int x, const int y) const
 
 std::vector<Cell*> Grid::GetTraversableCells(const int x, const int y) const
 {
-    if (!IsCellValid(x, y)) return {};
+    if (!IsCellValid(x, y) || mTraversableCellMap.find({x, y}) == mTraversableCellMap.end()) return {};
 
     std::vector<Cell*> traversableCells{};
 

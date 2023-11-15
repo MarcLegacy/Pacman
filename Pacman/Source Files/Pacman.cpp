@@ -38,11 +38,6 @@ Pacman::Pacman()
 
     LoadFiles();
     InitializeObjects();
-
-    mPathfinder = std::make_unique<Pathfinder>();
-
-
-
 }
 
 Pacman::~Pacman()
@@ -53,15 +48,15 @@ Pacman::~Pacman()
         mGrid = nullptr;
     }
 
-    //if (mDrawDebug != nullptr)
-    //{
-    //    mDrawDebug = nullptr;
-    //}
+    if (mDrawDebug != nullptr)
+    {
+        mDrawDebug = nullptr;
+    }
 
-    //if (mPathfinder != nullptr)
-    //{
-    //    mPathfinder = nullptr;
-    //}
+    if (mPathfinder != nullptr)
+    {
+        mPathfinder = nullptr;
+    }
 
     if (mEnemyManager != nullptr)
     {
@@ -195,6 +190,7 @@ void Pacman::InitializeObjects()
     mDrawDebug = std::make_unique<DrawDebug>();
     mPlayer = std::make_unique<Player>(mGrid->GetPlayerSpawnPosition(), CHARACTER_SPEED, PLAYER_LIFE_AMOUNT);
     mEnemyManager = std::make_unique<EnemyManager>(mPlayer);
+    mPathfinder = std::make_unique<Pathfinder>();
 }
 
 void Pacman::CheckCharacterContact()

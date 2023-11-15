@@ -20,14 +20,17 @@ public:
     std::vector<sf::Vector2i> AStar(const sf::Vector2f startWorldPosition, const sf::Vector2f targetWorldPosition, const bool weighted = false) const;
 
     // Performs a Breadth-First search and returns the first crossroad cells that are connected to the start grid position
-    std::vector<sf::Vector2i> BreadthFirstSearchCrossroadCells(const sf::Vector2i startGridPosition, const std::vector<sf::Vector2i>& crossroadPositions) const;
+    static std::vector<sf::Vector2i> BreadthFirstSearchCrossroadCells(const sf::Vector2i startGridPosition, const std::vector<sf::Vector2i>& crossroadPositions);
+
+    // Returns a map of all traversible cells and their distance to the start grid position.
+    static std::unordered_map<sf::Vector2i, int, Vector2iHasher> BreadthFirstSearch(const sf::Vector2i startGridPosition);
 
     // Sets the costs of the cells that are then used as cost inside the AStar function.
     void SetCellCosts(const std::vector<sf::Vector2i>& paths);
 
-private:
-    void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const;
+    static void DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap);
 
+private:
     const int EXTRA_WEIGHT{ 50 };
 
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};

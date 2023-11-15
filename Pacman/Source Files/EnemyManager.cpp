@@ -38,11 +38,13 @@ void EnemyManager::Update(const float deltaTime)
         for (const auto& enemy : mEnemies)
         {
             enemy->Update(deltaTime);
+            const sf::Vector2i gridPosition = grid->GetCellGridPosition(enemy->GetCenterPosition());
+            const sf::Vector2i targetGridPosition = grid->GetCellGridPosition(mTarget->GetCenterPosition());
 
             // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
-            if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
+            if (gridPosition == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
             {
-                enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
+                enemy->FindPath(targetGridPosition, true);
             }
         }
 
@@ -51,24 +53,33 @@ void EnemyManager::Update(const float deltaTime)
             UpdateTargetDistanceToCrossroadMap();
             SurroundTactic();
         }
+
         break;
+
     case EnemyMode::Scatter:
+        for (const auto& enemy : mEnemies)
         {
-            for (const auto& enemy : mEnemies)
+            enemy->Update(deltaTime);
+
+            const sf::Vector2i gridPosition = grid->GetCellGridPosition(enemy->GetCenterPosition());
+            sf::Vector2i targetGridPosition = grid->GetCellGridPosition(mTarget->GetCenterPosition());
+
+            if (gridPosition == enemy->GetTargetGridPosition() || enemy->GetPath().empty() || mTarget->GetOnCellChanged())
             {
-                enemy->Update(deltaTime);
-
-                // If the enemies are already on their tactical position or the pathing didn't end up at the player's position, find a new path.
-                if (grid->GetCellGridPosition(enemy->GetCenterPosition()) == enemy->GetTargetGridPosition() || enemy->GetPath().empty())
+                if (Utility::CalculateManhattanDistance(gridPosition, targetGridPosition) < AVOIDANCE_DISTANCE)
                 {
-                    enemy->FindPath(grid->GetCellGridPosition(mTarget->GetCenterPosition()), true);
+                    std::vector<sf::Vector2i> avoidPositions{};
+                    avoidPositions.push_back(targetGridPosition);
+
+                    targetGridPosition = FindTacticalRetreatGridPosition(gridPosition, avoidPositions, AVOIDANCE_DISTANCE);
                 }
+
+                enemy->FindPath(targetGridPosition, true);
             }
-        break;
         }
+
+        break;
     }
-
-
 }
 
 void EnemyManager::Draw(sf::RenderTarget* target)
@@ -290,4 +301,38 @@ void EnemyManager::ShowClosestCrossroadsToTarget(sf::RenderTarget* target, const
     {
         target->draw(Pacman::GetDrawDebug()->DrawCell(Pacman::GetGrid()->GetCellWorldPosition(gridPosition), 32.0f, sf::Color::Green));
     }
+}
+
+sf::Vector2i EnemyManager::FindTacticalRetreatGridPosition(const sf::Vector2i currentGridPosition,
+    const std::vector<sf::Vector2i>& avoidPositions, const int avoidanceWeight)
+{
+    auto cellCostMap = Pathfinder::BreadthFirstSearch(currentGridPosition);
+    int bestCost = INT_MAX;
+    sf::Vector2i bestGridPosition{};
+
+    for (auto& cellCost : cellCostMap)
+    {
+        if (cellCost.first == currentGridPosition)
+        {
+            cellCost.second = INT_MAX;
+            continue;
+        }
+
+        for (const auto& avoidPosition : avoidPositions)
+        {
+            const int distance = Utility::CalculateManhattanDistance(avoidPosition, cellCost.first);
+            if (distance < avoidanceWeight)
+            {
+                cellCost.second += avoidanceWeight - distance;
+            }
+        }
+
+        if (cellCost.second < bestCost)
+        {
+            bestCost = cellCost.second;
+            bestGridPosition = cellCost.first;
+        }
+    }
+
+    return bestGridPosition;
 }

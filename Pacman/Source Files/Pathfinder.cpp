@@ -100,7 +100,7 @@ std::vector<sf::Vector2i> Pathfinder::AStar(const sf::Vector2f startWorldPositio
 }
 
 std::vector<sf::Vector2i> Pathfinder::BreadthFirstSearchCrossroadCells(const sf::Vector2i startGridPosition,
-    const std::vector<sf::Vector2i>& crossroadPositions) const
+    const std::vector<sf::Vector2i>& crossroadPositions)
 {
     const auto& grid{ Pacman::GetGrid() };
     std::queue<sf::Vector2i> gridPositionsQueue{};
@@ -139,6 +139,38 @@ std::vector<sf::Vector2i> Pathfinder::BreadthFirstSearchCrossroadCells(const sf:
     return{ closestCrossroadGridPositions };
 }
 
+std::unordered_map<sf::Vector2i, int, Vector2iHasher> Pathfinder::BreadthFirstSearch(const sf::Vector2i startGridPosition)
+{
+    const auto& grid = Pacman::GetGrid();
+    std::queue<sf::Vector2i> gridPositionsQueue{};
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> cellCostMap{};
+    cellCostMap[startGridPosition] = 0;
+
+    gridPositionsQueue.push(startGridPosition);
+
+    int iterationCounter = 0;
+
+    while (!gridPositionsQueue.empty() && iterationCounter < MAX_ITERATIONS)
+    {
+        iterationCounter++;
+        const sf::Vector2i currentGridPosition = gridPositionsQueue.front();
+        gridPositionsQueue.pop();
+
+        for (const auto& traversableGridCell : grid->GetTraversableCells(currentGridPosition))
+        {
+            const sf::Vector2i traversableGridPosition = grid->GetCellGridPosition(traversableGridCell->GetPosition());
+            if (cellCostMap.find(traversableGridPosition) == cellCostMap.end())
+            {
+                gridPositionsQueue.push(traversableGridPosition);
+                int cellCost = cellCostMap.at(currentGridPosition) + 1;
+                cellCostMap[traversableGridPosition] = cellCost;
+            }
+        }
+    }
+
+    return cellCostMap;
+}
+
 void Pathfinder::SetCellCosts(const std::vector<sf::Vector2i>& paths)
 {
     for (auto& cellCost : mCellCostMap)
@@ -155,7 +187,7 @@ void Pathfinder::SetCellCosts(const std::vector<sf::Vector2i>& paths)
     }
 }
 
-void Pathfinder::DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap) const
+void Pathfinder::DrawCellCosts(const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& cellCostMap)
 {
     const auto& drawDebug = Pacman::GetDrawDebug();
 

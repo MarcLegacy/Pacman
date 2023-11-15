@@ -11,3 +11,5 @@ static constexpr float CELL_SIZE{ 32.0f };  // constexpr specifies that the valu
 
 static constexpr int PACMAN_SIZE{ 13 };
 static constexpr int ENEMY_SIZE{ 14 };
+static constexpr int MAX_ITERATIONS{ 1000 };
+static constexpr int AVOIDANCE_DISTANCE{ 5 };

@@ -182,6 +182,11 @@ sf::Text DrawDebug::DrawCellCost(const int cost, const sf::Vector2i gridPosition
         text.setCharacterSize(16);
         text.setPosition(text.getPosition() + sf::Vector2f{ 5.0f, 4.0f });
     }
+    else
+    {
+        text.setLetterSpacing(0.1f);
+        text.setCharacterSize(8);
+    }
 
     return text;
 }
