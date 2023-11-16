@@ -26,6 +26,10 @@ EnemyManager::EnemyManager(std::unique_ptr<Player>& target)
     {
         mTargetDistanceToCrossroadMap[gridPosition] = 0;
     }
+
+    std::vector<sf::Vector2i> avoidPositions{};
+    avoidPositions.emplace_back(25, 14);
+    FindTacticalRetreatGridPosition({ 1, 14 }, avoidPositions);
 }
 
 void EnemyManager::Update(const float deltaTime)
@@ -66,13 +70,11 @@ void EnemyManager::Update(const float deltaTime)
 
             if (gridPosition == enemy->GetTargetGridPosition() || enemy->GetPath().empty() || mTarget->GetOnCellChanged())
             {
-                if (Utility::CalculateManhattanDistance(gridPosition, targetGridPosition) < AVOIDANCE_DISTANCE)
-                {
-                    std::vector<sf::Vector2i> avoidPositions{};
-                    avoidPositions.push_back(targetGridPosition);
+                //std::vector<sf::Vector2i> avoidPositions{};
+                //avoidPositions.push_back(targetGridPosition);
 
-                    targetGridPosition = FindTacticalRetreatGridPosition(gridPosition, avoidPositions, AVOIDANCE_DISTANCE);
-                }
+                //targetGridPosition = FindTacticalRetreatGridPosition(gridPosition, avoidPositions);
+                targetGridPosition = FindTacticalRetreatGridPosition2(enemy);
 
                 enemy->FindPath(targetGridPosition, true);
             }
@@ -304,11 +306,14 @@ void EnemyManager::ShowClosestCrossroadsToTarget(sf::RenderTarget* target, const
 }
 
 sf::Vector2i EnemyManager::FindTacticalRetreatGridPosition(const sf::Vector2i currentGridPosition,
-    const std::vector<sf::Vector2i>& avoidPositions, const int avoidanceWeight)
+    const std::vector<sf::Vector2i>& avoidPositions)
 {
     auto cellCostMap = Pathfinder::BreadthFirstSearch(currentGridPosition);
     int bestCost = INT_MAX;
     sf::Vector2i bestGridPosition{};
+    const auto& grid = Pacman::GetGrid();
+
+    int newAvoidanceWeight = grid->GetGridWidth() + grid->GetGridHeight();
 
     for (auto& cellCost : cellCostMap)
     {
@@ -321,10 +326,7 @@ sf::Vector2i EnemyManager::FindTacticalRetreatGridPosition(const sf::Vector2i cu
         for (const auto& avoidPosition : avoidPositions)
         {
             const int distance = Utility::CalculateManhattanDistance(avoidPosition, cellCost.first);
-            if (distance < avoidanceWeight)
-            {
-                cellCost.second += avoidanceWeight - distance;
-            }
+            cellCost.second += newAvoidanceWeight - distance;
         }
 
         if (cellCost.second < bestCost)
@@ -334,5 +336,42 @@ sf::Vector2i EnemyManager::FindTacticalRetreatGridPosition(const sf::Vector2i cu
         }
     }
 
+    //Pathfinder::DrawCellCosts(cellCostMap);
+
     return bestGridPosition;
+}
+
+sf::Vector2i EnemyManager::FindTacticalRetreatGridPosition2(const std::unique_ptr<Enemy>& currentEnemy)
+{
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> totalCellCostMap = currentEnemy->GetCellCostMap();
+    sf::Vector2i lowestCostGridPosition{};
+    int lowestCost = INT_MAX;
+
+    for (auto& totalCellCost : totalCellCostMap)
+    {
+        if (totalCellCost.first == Pacman::GetGrid()->GetCellGridPosition(currentEnemy->GetCenterPosition()))
+        {
+            totalCellCost.second = INT_MAX;
+            continue;
+        }
+
+        // Gives the cells a cost to avoid the player.
+        totalCellCost.second -= mTarget->GetCellCostMap().at(totalCellCost.first) * 2;
+
+        // Give the cell a cost to avoid other enemies.
+        for (const auto& enemy : mEnemies)
+        {
+            if (enemy == currentEnemy) continue;
+
+            totalCellCost.second -= enemy->GetCellCostMap().at(totalCellCost.first);
+        }
+
+        if (totalCellCost.second < lowestCost)
+        {
+            lowestCost = totalCellCost.second;
+            lowestCostGridPosition = totalCellCost.first;
+        }
+    }
+
+    return lowestCostGridPosition;
 }

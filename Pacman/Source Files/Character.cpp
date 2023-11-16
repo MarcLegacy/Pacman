@@ -91,6 +91,7 @@ void Character::UpdateCellPositionStatus()
     {
         mOnCellChanged = true;
         mCurrentGridPosition = gridPosition;
+        mCellCostMap = Pacman::GetPathfinder()->BreadthFirstSearch(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()));
     }
     else
     {

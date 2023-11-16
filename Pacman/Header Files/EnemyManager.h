@@ -52,7 +52,8 @@ private:
     void ShowCrossroadDistanceToTargetCost(sf::RenderTarget* target, const bool show = true) const;
     void ShowClosestCrossroadsToTarget(sf::RenderTarget* target, const bool show = true) const;
 
-    static sf::Vector2i FindTacticalRetreatGridPosition(const sf::Vector2i currentGridPosition, const std::vector<sf::Vector2i>& avoidPositions, const int avoidanceWeight = 5);
+    static sf::Vector2i FindTacticalRetreatGridPosition(const sf::Vector2i currentGridPosition, const std::vector<sf::Vector2i>& avoidPositions);
+    sf::Vector2i FindTacticalRetreatGridPosition2(const std::unique_ptr<Enemy>& currentEnemy);
 
     std::vector<std::unique_ptr<Enemy>> mEnemies{};
     std::unique_ptr<Player>& mTarget;

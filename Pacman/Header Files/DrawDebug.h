@@ -42,6 +42,8 @@ public:
     // Draw's the passed cost in a cell. Won't space well will negative numbers
     void DrawCellCostPersistant(const int cost, const sf::Vector2i gridPosition, const sf::Color& color = sf::Color::White) { mDrawTexts.push_back(DrawCellCost(cost, gridPosition, color)); }
 
+    void Clear() { mDrawLines.clear(); mDrawRectangleShapes.clear(); mDrawArrows.clear(); mDrawTexts.clear(); }
+
 private:
     std::vector<std::array<sf::Vertex, 2>> mDrawLines{};
     std::vector<sf::RectangleShape> mDrawRectangleShapes{}; // Can't use the 'Shape' class as it is an abstract class.

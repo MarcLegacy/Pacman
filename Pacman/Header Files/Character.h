@@ -1,9 +1,11 @@
 #pragma once
 
 #include <map>
+#include <unordered_map>
 
 #include "GlobalEnums.h"
 #include "Object.h"
+#include "Utility.h"
 
 class Character : public Object
 {
@@ -19,6 +21,8 @@ public:
     Direction GetCurrentDirection() const { return mCurrentDirection; }
 
     void ResetPosition() { mPosition = mStartingPosition; mSprite.setPosition(mPosition); mSprite.setTexture(mTexture); mDestinationWorldPosition = mPosition; }
+
+    const std::unordered_map<sf::Vector2i, int, Vector2iHasher>& GetCellCostMap() const { return mCellCostMap; }
 
 protected:
     const float CELL_REACHED_RADIUS{ 3.0f };
@@ -41,6 +45,7 @@ protected:
     sf::Vector2i mCurrentGridPosition{};
     bool mOnCellChanged{ false };
     std::multimap<Direction, sf::Texture> mTextures{};
+    std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
 
 private:
     void UpdateCellPositionStatus();
