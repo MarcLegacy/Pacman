@@ -28,6 +28,7 @@ protected:
     const float CELL_REACHED_RADIUS{ 3.0f };
 
     virtual void Move(const float deltaTime) = 0;
+    virtual void Animation(const float deltaTime) = 0;
 
     // Check if the passed direction is valid and makes sure the variables for moving towards that direction are set.
     bool MoveToDirection(const Direction& direction);
@@ -38,6 +39,8 @@ protected:
     // Checks if the character current direction and desired direction are the exact opposite/
     bool IsGoingBack() const;
 
+    void WalkingAnimation(float deltaTime);
+
     float mSpeed{ 100.0f };
     Direction mCurrentDirection{ Direction::Left }; // The pacman game I played, always made the player start left.
     Direction mDesiredDirection{ mCurrentDirection };
@@ -46,6 +49,8 @@ protected:
     bool mOnCellChanged{ false };
     std::multimap<Direction, sf::Texture> mTextures{};
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mCellCostMap{};
+    float animationTimer{ 0.0f };
+    bool firstTexture{ true };
 
 private:
     void UpdateCellPositionStatus();
@@ -54,10 +59,6 @@ private:
 
     void ShowCurrentGridPosition(sf::RenderTarget* target, const bool show = true) const;
 
-    void Animation(float deltaTime);
-
-    bool firstTexture{ true };
-    float animationTimer{ 0.0f };
     sf::Vector2f mStartingPosition{};
 };
 

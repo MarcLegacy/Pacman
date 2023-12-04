@@ -61,6 +61,11 @@ void Player::Move(const float deltaTime)
     }
 }
 
+void Player::Animation(const float deltaTime)
+{
+    WalkingAnimation(deltaTime);
+}
+
 
 void Player::PlayerInput()
 {

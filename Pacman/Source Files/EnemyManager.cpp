@@ -30,8 +30,6 @@ EnemyManager::EnemyManager(std::unique_ptr<Player>& target)
     std::vector<sf::Vector2i> avoidPositions{};
     avoidPositions.emplace_back(25, 14);
     FindTacticalRetreatGridPosition({ 1, 14 }, avoidPositions);
-
-    LoadTextures();
 }
 
 void EnemyManager::Update(const float deltaTime)
@@ -168,28 +166,6 @@ void EnemyManager::SwitchEnemyMode()
         }
     }
 
-}
-
-void EnemyManager::LoadTextures()
-{
-    sf::Texture texture;
-
-    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(133, 65, ENEMY_SIZE, ENEMY_SIZE)))
-    {
-        mScaredTextures.emplace(false, texture);
-    }
-    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(149, 65, ENEMY_SIZE, ENEMY_SIZE)))
-    {
-        mScaredTextures.emplace(false, texture);
-    }
-    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(165, 65, ENEMY_SIZE, ENEMY_SIZE)))
-    {
-        mScaredTextures.emplace(true, texture);
-    }
-    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(181, 65, ENEMY_SIZE, ENEMY_SIZE)))
-    {
-        mScaredTextures.emplace(true, texture);
-    }
 }
 
 std::vector<sf::Vector2i> EnemyManager::CollectCalculatedPaths() const

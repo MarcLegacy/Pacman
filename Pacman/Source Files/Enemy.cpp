@@ -4,6 +4,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "DrawDebug.h"
+#include "EnemyManager.h"
 #include "Grid.h"
 #include "Pacman.h"
 
@@ -69,12 +70,49 @@ void Enemy::Draw(sf::RenderTarget* target)
     ShowTargetGridPosition(target, false);
 }
 
+void Enemy::Animation(const float deltaTime)
+{
+    switch (Pacman::GetEnemyManager()->GetEnemyMode())
+    {
+        case EnemyMode::Chase:
+            WalkingAnimation(deltaTime);
+        break;
+
+        case EnemyMode::Scatter:
+            ScaredAnimation(deltaTime);
+        break;
+    }
+    
+}
+
 void Enemy::FindPath(const sf::Vector2i targetGridPosition, const bool withWeight)
 {
     mTargetGridPosition = targetGridPosition;
 
     mPath = Pacman::GetPathfinder()->AStar(Pacman::GetGrid()->GetCellGridPosition(GetCenterPosition()), targetGridPosition, withWeight);
     mCurrentPathIndex = 0;
+}
+
+void Enemy::ScaredAnimation(const float deltaTime)
+{
+    animationTimer -= deltaTime;
+
+    if (animationTimer > 0.0f) return;
+
+    animationTimer = 0.25f;
+    auto it = mScaredTextures.equal_range(false);
+
+    if (firstTexture)
+    {
+        firstTexture = false;
+        ++it.first;
+    }
+    else
+    {
+        firstTexture = true;
+    }
+
+    mSprite.setTexture(it.first->second);
 }
 
 void Enemy::FollowPath()
@@ -122,6 +160,12 @@ void Enemy::ShowTargetGridPosition(sf::RenderTarget* target, const bool show) co
 
 void Enemy::LoadTextures(const int spriteYPos)
 {
+    LoadNormalTextures(spriteYPos);
+    LoadScaredTextures();
+}
+
+void Enemy::LoadNormalTextures(int spriteYPos)
+{
     sf::Texture texture;
 
     if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(68, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
@@ -155,6 +199,28 @@ void Enemy::LoadTextures(const int spriteYPos)
     if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(20, spriteYPos, ENEMY_SIZE, ENEMY_SIZE)))
     {
         mTextures.emplace(Direction::Right, texture);
+    }
+}
+
+void Enemy::LoadScaredTextures()
+{
+    sf::Texture texture;
+
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(132, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(false, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(148, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(false, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(164, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(true, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(180, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(true, texture);
     }
 }
 

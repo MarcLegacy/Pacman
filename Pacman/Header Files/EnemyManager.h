@@ -29,7 +29,6 @@ public:
     void SurroundTactic();
     void ResetPositions() const;
     void SwitchEnemyMode();
-    void LoadTextures();
 
     const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return mEnemies; }
     EnemyMode GetEnemyMode() const { return mEnemyMode; }
@@ -64,7 +63,7 @@ private:
 
     EnemyMode mEnemyMode{ EnemyMode::Chase };
 
-    std::multimap<bool, sf::Texture> mScaredTextures{};
+
 };
 
 

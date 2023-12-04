@@ -136,7 +136,7 @@ void Character::ShowCurrentGridPosition(sf::RenderTarget* target, const bool sho
     target->draw(DrawDebug::DrawCell(Pacman::GetGrid()->GetCellWorldPosition(GetCenterPosition()), 32.0f, sf::Color::Red));
 }
 
-void Character::Animation(const float deltaTime)
+void Character::WalkingAnimation(const float deltaTime)
 {
     //if (mCurrentDirection == Direction::Invalid || mTextures.empty()) return;
 
