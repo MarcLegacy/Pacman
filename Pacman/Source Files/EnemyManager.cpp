@@ -30,6 +30,8 @@ EnemyManager::EnemyManager(std::unique_ptr<Player>& target)
     std::vector<sf::Vector2i> avoidPositions{};
     avoidPositions.emplace_back(25, 14);
     FindTacticalRetreatGridPosition({ 1, 14 }, avoidPositions);
+
+    LoadTextures();
 }
 
 void EnemyManager::Update(const float deltaTime)
@@ -148,6 +150,45 @@ void EnemyManager::SwitchEnemyMode()
     for (const auto& enemy : mEnemies)
     {
         enemy->ClearPath();
+    }
+
+    for (const auto& enemy : mEnemies)
+    {
+        switch (mEnemyMode)
+        {
+        case EnemyMode::Chase:
+            enemy->SetSpeed(CHARACTER_SPEED);
+            break;
+        case EnemyMode::Scatter:
+            enemy->SetSpeed(CHARACTER_SLOWED_SPEED);
+            break;
+        default:
+            std::cout << "Wrong enemy mode!" << std::endl;
+            break;
+        }
+    }
+
+}
+
+void EnemyManager::LoadTextures()
+{
+    sf::Texture texture;
+
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(133, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(false, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(149, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(false, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(165, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(true, texture);
+    }
+    if (texture.loadFromFile("Resource Files/Pac-Man_Sprite_Sheet.png", sf::IntRect(181, 65, ENEMY_SIZE, ENEMY_SIZE)))
+    {
+        mScaredTextures.emplace(true, texture);
     }
 }
 

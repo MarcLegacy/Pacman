@@ -49,7 +49,7 @@ void Player::Move(const float deltaTime)
                 IncreaseScore(PILL_SCORE);
                 mTotalPillsCaught++;
             }
-            else
+            else if (Pacman::GetEnemyManager()->GetEnemyMode() == EnemyMode::Chase)
             {
                 Pacman::GetEnemyManager()->SwitchEnemyMode();
             }

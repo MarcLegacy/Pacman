@@ -17,6 +17,7 @@ public:
 
     const std::vector<sf::Vector2i>& GetPath() const { return mPath; }
     sf::Vector2i GetTargetGridPosition() const { return mTargetGridPosition; }
+    void SetSpeed(const float speed) { mSpeed = speed; }
 
 private:
     // Takes care of setting the correct direction and destination following the current path it is on.

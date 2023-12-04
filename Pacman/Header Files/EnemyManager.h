@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <unordered_map>
 
@@ -28,6 +29,7 @@ public:
     void SurroundTactic();
     void ResetPositions() const;
     void SwitchEnemyMode();
+    void LoadTextures();
 
     const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return mEnemies; }
     EnemyMode GetEnemyMode() const { return mEnemyMode; }
@@ -61,6 +63,8 @@ private:
     std::vector<sf::Vector2i> mCurrentClosestCrossroadGridPositions{};
 
     EnemyMode mEnemyMode{ EnemyMode::Chase };
+
+    std::multimap<bool, sf::Texture> mScaredTextures{};
 };
 
 

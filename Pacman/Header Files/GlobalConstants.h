@@ -4,6 +4,7 @@
 static constexpr int PILL_SCORE{ 10 };
 static constexpr int ENEMY_KILLED_SCORE{ 50 };
 static constexpr float CHARACTER_SPEED{ 100.0f };
+static constexpr float CHARACTER_SLOWED_SPEED{ CHARACTER_SPEED * 0.75 };
 static constexpr int PLAYER_LIFE_AMOUNT{ 3 };
 
 // Other Constants
