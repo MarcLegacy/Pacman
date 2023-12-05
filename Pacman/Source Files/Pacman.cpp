@@ -197,7 +197,8 @@ void Pacman::CheckCharacterContact()
 {
     for (const auto& enemy : mEnemyManager->GetEnemies())
     {
-        if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
+        //if (mGrid->GetCellGridPosition(mPlayer->GetCenterPosition()) == mGrid->GetCellGridPosition(enemy->GetCenterPosition()))
+        if (Utility::CalculateDistance(mPlayer->GetCenterPosition(), enemy->GetCenterPosition()) < CELL_SIZE)
         {
             switch (mEnemyManager->GetEnemyMode())
             {
