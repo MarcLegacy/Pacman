@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "GlobalConstants.h"
 #include "Object.h"
 #include "Utility.h"
 
@@ -32,6 +33,7 @@ public:
 
     const std::vector<std::unique_ptr<Enemy>>& GetEnemies() { return mEnemies; }
     EnemyMode GetEnemyMode() const { return mEnemyMode; }
+    float GetScarredTimer() const { return mScarredTimer; }
 
 private:
     std::vector<sf::Vector2i> CollectCalculatedPaths() const;
@@ -56,6 +58,8 @@ private:
     static sf::Vector2i FindTacticalRetreatGridPosition(const sf::Vector2i currentGridPosition, const std::vector<sf::Vector2i>& avoidPositions);
     sf::Vector2i FindTacticalRetreatGridPosition2(const std::unique_ptr<Enemy>& currentEnemy);
 
+    void ScarredCounter(float deltaTime);
+
     std::vector<std::unique_ptr<Enemy>> mEnemies{};
     std::unique_ptr<Player>& mTarget;
     std::unordered_map<sf::Vector2i, int, Vector2iHasher> mTargetDistanceToCrossroadMap{};
@@ -63,7 +67,7 @@ private:
 
     EnemyMode mEnemyMode{ EnemyMode::Chase };
 
-
+    float mScarredTimer{ POWER_PILL_DURATION };
 };
 
 

@@ -144,7 +144,7 @@ void Character::WalkingAnimation(const float deltaTime)
 
     if (animationTimer > 0.0f) return;
 
-    animationTimer = 0.25f;
+    animationTimer = ANIMATION_SPEED;
     auto it = mTextures.equal_range(mCurrentDirection);
 
     if (firstTexture)

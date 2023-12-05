@@ -80,6 +80,8 @@ void EnemyManager::Update(const float deltaTime)
             }
         }
 
+        ScarredCounter(deltaTime);
+
         break;
     }
 }
@@ -392,3 +394,14 @@ sf::Vector2i EnemyManager::FindTacticalRetreatGridPosition2(const std::unique_pt
 
     return lowestCostGridPosition;
 }
+
+void EnemyManager::ScarredCounter(const float deltaTime)
+{
+    mScarredTimer -= deltaTime;
+
+    if (mScarredTimer > 0.0f) return;
+
+    mScarredTimer = POWER_PILL_DURATION;
+    SwitchEnemyMode();
+}
+

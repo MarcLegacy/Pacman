@@ -95,12 +95,21 @@ void Enemy::FindPath(const sf::Vector2i targetGridPosition, const bool withWeigh
 
 void Enemy::ScaredAnimation(const float deltaTime)
 {
+    bool isTurning = false;
+
     animationTimer -= deltaTime;
 
     if (animationTimer > 0.0f) return;
 
-    animationTimer = 0.25f;
-    auto it = mScaredTextures.equal_range(false);
+    animationTimer = ANIMATION_SPEED;
+
+    if (Pacman::GetEnemyManager()->GetScarredTimer() < (POWER_PILL_DURATION * 0.25f))
+    {
+        // This should make sure the enemy is flashing every 0.5 seconds.
+        static_cast<int>(Pacman::GetEnemyManager()->GetScarredTimer() * 10) % 5 == 0 ? isTurning = false : isTurning = true;
+    }
+
+    auto it = mScaredTextures.equal_range(isTurning);
 
     if (firstTexture)
     {
